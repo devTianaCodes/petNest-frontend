@@ -9,17 +9,24 @@ export function NavBar() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-black/5 bg-canvas/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" className="text-2xl font-semibold tracking-tight text-ink">
-          PetNest
-        </Link>
-        <nav className="flex items-center gap-2 text-ink">
+      <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-4">
+        <nav className="flex items-center gap-2 justify-self-start text-ink">
           <NavLink to="/adopt" className={sharedLinkClass}>
             Adopt
           </NavLink>
           <NavLink to="/browse" className={sharedLinkClass}>
             Browse
           </NavLink>
+        </nav>
+        <Link to="/" className="flex items-center justify-center gap-3 justify-self-center">
+          <img
+            src="/Gemini_Generated_Image_8i0jnd8i0jnd8i0j.png"
+            alt="PetNest logo"
+            className="h-14 w-auto object-contain"
+          />
+          <span className="text-2xl font-semibold tracking-tight text-ink">PetNest</span>
+        </Link>
+        <nav className="flex items-center gap-2 justify-self-end text-ink">
           {user ? (
             <>
               <NavLink to="/dashboard" className={sharedLinkClass}>

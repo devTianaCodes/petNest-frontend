@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { createAdoptionRequest } from "../api/adoption-requests";
 import { getPet } from "../api/pets";
@@ -10,6 +10,10 @@ export function PetDetailsPage() {
   const { id = "" } = useParams();
   const { user } = useAuth();
   const [message, setMessage] = useState("");
+  const [housingType, setHousingType] = useState("");
+  const [hasOtherPets, setHasOtherPets] = useState(false);
+  const [hasChildren, setHasChildren] = useState(false);
+  const queryClient = useQueryClient();
   const petQuery = useQuery({
     queryKey: ["pet", id],
     queryFn: () => getPet(id),
@@ -17,7 +21,20 @@ export function PetDetailsPage() {
   });
 
   const requestMutation = useMutation({
-    mutationFn: () => createAdoptionRequest(id, { message })
+    mutationFn: () =>
+      createAdoptionRequest(id, {
+        message,
+        housingType,
+        hasOtherPets,
+        hasChildren
+      }),
+    onSuccess: async () => {
+      setMessage("");
+      setHousingType("");
+      setHasOtherPets(false);
+      setHasChildren(false);
+      await queryClient.invalidateQueries({ queryKey: ["outgoing-requests"] });
+    }
   });
 
   const pet = petQuery.data?.listing;
@@ -88,18 +105,35 @@ export function PetDetailsPage() {
           </p>
           {user ? (
             <>
+              <input
+                className="mt-4 w-full rounded-2xl border border-stone-200 px-4 py-3"
+                value={housingType}
+                onChange={(event) => setHousingType(event.target.value)}
+                placeholder="Housing type, e.g. apartment, house with yard"
+              />
               <textarea
                 className="mt-4 min-h-40 w-full rounded-2xl border border-stone-200 px-4 py-3"
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
                 placeholder="Explain your home, experience, and why this pet is a fit."
               />
+              <div className="mt-4 grid gap-3 text-sm text-stone-700">
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" checked={hasOtherPets} onChange={(event) => setHasOtherPets(event.target.checked)} />
+                  I already have other pets at home
+                </label>
+                <label className="flex items-center gap-3">
+                  <input type="checkbox" checked={hasChildren} onChange={(event) => setHasChildren(event.target.checked)} />
+                  Children live in the home
+                </label>
+              </div>
               <button
                 type="button"
-                className="mt-4 rounded-full bg-fern px-5 py-3 text-sm font-medium text-white"
+                className="mt-4 rounded-full bg-fern px-5 py-3 text-sm font-medium text-white disabled:opacity-70"
                 onClick={() => requestMutation.mutate()}
+                disabled={requestMutation.isPending || message.trim().length < 20}
               >
-                Submit request
+                {requestMutation.isPending ? "Sending request..." : "Submit request"}
               </button>
               {requestMutation.isError ? (
                 <p className="mt-3 text-sm text-rose-700">{(requestMutation.error as Error).message}</p>
