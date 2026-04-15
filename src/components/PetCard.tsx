@@ -4,6 +4,7 @@ import { StatusBadge } from "./StatusBadge";
 
 export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStatus?: boolean }) {
   const coverImage = pet.images[0]?.imageUrl ?? "https://placehold.co/640x420?text=PetNest";
+  const breedLabel = [pet.breedPrimary, pet.breedSecondary].filter(Boolean).join(" / ");
 
   return (
     <article className="overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
@@ -22,7 +23,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
         <p className="line-clamp-3 text-sm leading-6 text-stone-700">{pet.description}</p>
         <div className="flex items-center justify-between">
           <p className="text-sm text-stone-500">
-            {pet.ageLabel} • {pet.sex.toLowerCase()}
+            {pet.ageLabel} • {breedLabel || pet.sex.toLowerCase()}
           </p>
           <Link to={`/pets/${pet.id}`} className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-white">
             View

@@ -20,6 +20,7 @@ export function PetDetailsPage() {
   });
 
   const pet = petQuery.data?.listing;
+  const breedLabel = [pet?.breedPrimary, pet?.breedSecondary].filter(Boolean).join(" / ");
 
   if (!pet) {
     return <div className="rounded-[28px] bg-white p-10 shadow-sm ring-1 ring-black/5">Loading listing...</div>;
@@ -47,7 +48,16 @@ export function PetDetailsPage() {
             <div>Age: {pet.ageLabel}</div>
             <div>Sex: {pet.sex}</div>
             <div>Size: {pet.size}</div>
-            <div>Breed: {pet.breed || "Unknown"}</div>
+            <div>Breed: {breedLabel || "Unknown"}</div>
+            <div>Energy: {pet.energyLevel || "Unknown"}</div>
+            <div>Vaccinated: {pet.vaccinated === null || pet.vaccinated === undefined ? "Unknown" : pet.vaccinated ? "Yes" : "No"}</div>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3 text-sm">
+            <Tag label="Good with kids" active={pet.goodWithKids} />
+            <Tag label="Good with dogs" active={pet.goodWithDogs} />
+            <Tag label="Good with cats" active={pet.goodWithCats} />
+            <Tag label="House trained" active={pet.houseTrained} />
+            <Tag label="Spayed / neutered" active={pet.spayedNeutered} />
           </div>
           <p className="mt-6 text-base leading-7 text-stone-700">{pet.description}</p>
           {pet.rescueStory ? (
@@ -91,5 +101,17 @@ export function PetDetailsPage() {
         </div>
       </aside>
     </div>
+  );
+}
+
+function Tag({ label, active }: { label: string; active?: boolean | null }) {
+  if (active === null || active === undefined) {
+    return null;
+  }
+
+  return (
+    <span className={`rounded-full px-4 py-2 ${active ? "bg-fern/15 text-fern" : "bg-stone-200 text-stone-600"}`}>
+      {label}
+    </span>
   );
 }

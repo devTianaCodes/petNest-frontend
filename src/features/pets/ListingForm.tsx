@@ -8,15 +8,26 @@ const listingSchema = z.object({
   name: z.string().min(2, "Name is required"),
   description: z.string().min(30, "Description should be more detailed"),
   ageLabel: z.string().min(2, "Age is required"),
+  ageValue: z.coerce.number().int().min(0).max(99).nullable().optional(),
+  ageUnit: z.enum(["WEEKS", "MONTHS", "YEARS"]).nullable().optional(),
   sex: z.enum(["MALE", "FEMALE", "UNKNOWN"]),
   size: z.enum(["SMALL", "MEDIUM", "LARGE", "UNKNOWN"]),
-  breed: z.string().optional(),
+  breedPrimary: z.string().optional(),
+  breedSecondary: z.string().optional(),
+  isMixedBreed: z.boolean().optional(),
+  energyLevel: z.enum(["LOW", "MEDIUM", "HIGH"]).nullable().optional(),
+  houseTrained: z.boolean().optional(),
+  spayedNeutered: z.boolean().optional(),
+  vaccinated: z.boolean().optional(),
   city: z.string().min(2),
   state: z.string().min(2),
   contactEmail: z.string().email(),
   contactPhone: z.string().optional(),
   rescueStory: z.string().optional(),
-  healthNotes: z.string().optional()
+  healthNotes: z.string().optional(),
+  goodWithKids: z.boolean().optional(),
+  goodWithDogs: z.boolean().optional(),
+  goodWithCats: z.boolean().optional()
 });
 
 export type ListingFormValues = z.infer<typeof listingSchema>;
@@ -39,15 +50,26 @@ export function ListingForm({
       name: initialValues?.name ?? "",
       description: initialValues?.description ?? "",
       ageLabel: initialValues?.ageLabel ?? "",
+      ageValue: initialValues?.ageValue ?? null,
+      ageUnit: initialValues?.ageUnit ?? null,
       sex: initialValues?.sex ?? "UNKNOWN",
       size: initialValues?.size ?? "UNKNOWN",
-      breed: initialValues?.breed ?? "",
+      breedPrimary: initialValues?.breedPrimary ?? "",
+      breedSecondary: initialValues?.breedSecondary ?? "",
+      isMixedBreed: initialValues?.isMixedBreed ?? false,
+      energyLevel: initialValues?.energyLevel ?? null,
+      houseTrained: initialValues?.houseTrained ?? false,
+      spayedNeutered: initialValues?.spayedNeutered ?? false,
+      vaccinated: initialValues?.vaccinated ?? false,
       city: initialValues?.city ?? "",
       state: initialValues?.state ?? "",
       contactEmail: initialValues?.contactEmail ?? "",
       contactPhone: initialValues?.contactPhone ?? "",
       rescueStory: initialValues?.rescueStory ?? "",
-      healthNotes: initialValues?.healthNotes ?? ""
+      healthNotes: initialValues?.healthNotes ?? "",
+      goodWithKids: initialValues?.goodWithKids ?? false,
+      goodWithDogs: initialValues?.goodWithDogs ?? false,
+      goodWithCats: initialValues?.goodWithCats ?? false
     }
   });
 
@@ -89,8 +111,48 @@ export function ListingForm({
       </label>
 
       <label className="space-y-2">
-        <span className="text-sm font-medium">Breed</span>
-        <input className="w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("breed")} />
+        <span className="text-sm font-medium">Age number</span>
+        <input
+          type="number"
+          className="w-full rounded-2xl border border-stone-200 px-4 py-3"
+          {...form.register("ageValue", { setValueAs: (value) => (value === "" ? null : Number(value)) })}
+        />
+      </label>
+
+      <label className="space-y-2">
+        <span className="text-sm font-medium">Age unit</span>
+        <select
+          className="w-full rounded-2xl border border-stone-200 px-4 py-3"
+          {...form.register("ageUnit", { setValueAs: (value) => (value === "" ? null : value) })}
+        >
+          <option value="">Unknown</option>
+          <option value="WEEKS">Weeks</option>
+          <option value="MONTHS">Months</option>
+          <option value="YEARS">Years</option>
+        </select>
+      </label>
+
+      <label className="space-y-2">
+        <span className="text-sm font-medium">Primary breed</span>
+        <input className="w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("breedPrimary")} />
+      </label>
+
+      <label className="space-y-2">
+        <span className="text-sm font-medium">Secondary breed</span>
+        <input className="w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("breedSecondary")} />
+      </label>
+
+      <label className="space-y-2">
+        <span className="text-sm font-medium">Energy level</span>
+        <select
+          className="w-full rounded-2xl border border-stone-200 px-4 py-3"
+          {...form.register("energyLevel", { setValueAs: (value) => (value === "" ? null : value) })}
+        >
+          <option value="">Unknown</option>
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+        </select>
       </label>
 
       <label className="space-y-2">
@@ -141,6 +203,37 @@ export function ListingForm({
         <span className="text-sm font-medium">Health notes</span>
         <textarea className="min-h-28 w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("healthNotes")} />
       </label>
+
+      <div className="grid gap-3 rounded-3xl bg-sand/35 p-5 md:col-span-2 md:grid-cols-3">
+        <label className="flex items-center gap-3 text-sm font-medium text-stone-800">
+          <input type="checkbox" {...form.register("isMixedBreed")} />
+          Mixed breed
+        </label>
+        <label className="flex items-center gap-3 text-sm font-medium text-stone-800">
+          <input type="checkbox" {...form.register("houseTrained")} />
+          House trained
+        </label>
+        <label className="flex items-center gap-3 text-sm font-medium text-stone-800">
+          <input type="checkbox" {...form.register("spayedNeutered")} />
+          Spayed / neutered
+        </label>
+        <label className="flex items-center gap-3 text-sm font-medium text-stone-800">
+          <input type="checkbox" {...form.register("vaccinated")} />
+          Vaccinated
+        </label>
+        <label className="flex items-center gap-3 text-sm font-medium text-stone-800">
+          <input type="checkbox" {...form.register("goodWithKids")} />
+          Good with kids
+        </label>
+        <label className="flex items-center gap-3 text-sm font-medium text-stone-800">
+          <input type="checkbox" {...form.register("goodWithDogs")} />
+          Good with dogs
+        </label>
+        <label className="flex items-center gap-3 text-sm font-medium text-stone-800">
+          <input type="checkbox" {...form.register("goodWithCats")} />
+          Good with cats
+        </label>
+      </div>
 
       <div className="md:col-span-2">
         <button

@@ -6,9 +6,17 @@ export type ListingPayload = {
   name: string;
   description: string;
   ageLabel: string;
+  ageValue?: number | null;
+  ageUnit?: "WEEKS" | "MONTHS" | "YEARS" | null;
   sex: "MALE" | "FEMALE" | "UNKNOWN";
   size: "SMALL" | "MEDIUM" | "LARGE" | "UNKNOWN";
-  breed?: string;
+  breedPrimary?: string;
+  breedSecondary?: string;
+  isMixedBreed?: boolean;
+  energyLevel?: "LOW" | "MEDIUM" | "HIGH" | null;
+  houseTrained?: boolean;
+  spayedNeutered?: boolean;
+  vaccinated?: boolean;
   city: string;
   state: string;
   contactEmail: string;
@@ -16,7 +24,8 @@ export type ListingPayload = {
   rescueStory?: string;
   healthNotes?: string;
   goodWithKids?: boolean;
-  goodWithPets?: boolean;
+  goodWithDogs?: boolean;
+  goodWithCats?: boolean;
 };
 
 export function getPets(params: URLSearchParams) {
