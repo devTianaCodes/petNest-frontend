@@ -20,7 +20,7 @@ export function NavBar() {
         </nav>
         <Link to="/" className="flex items-center justify-center gap-3 justify-self-center">
           <img
-            src="/Gemini_Generated_Image_8i0jnd8i0jnd8i0j.png"
+            src="/logo.png"
             alt="PetNest logo"
             className="h-14 w-auto object-contain"
           />

@@ -14,7 +14,7 @@ export function HomePage() {
             way to connect.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link to="/adopt" className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-white">
+            <Link to="/adopt" className="rounded-full bg-fern px-6 py-3 text-sm font-medium text-white">
               View animals
             </Link>
             <Link to="/register" className="rounded-full border border-ink/10 px-6 py-3 text-sm font-medium text-ink">
@@ -22,7 +22,10 @@ export function HomePage() {
             </Link>
           </div>
         </div>
-        <div className="rounded-[28px] bg-[url('https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center min-h-[320px]" />
+        <div
+          className="min-h-[320px] rounded-[28px] bg-cover bg-center"
+          style={{ backgroundImage: "url('/hero.png')" }}
+        />
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
