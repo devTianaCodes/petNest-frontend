@@ -30,7 +30,7 @@ export function AdoptPage() {
       <PageHeader
         eyebrow="Adopt"
         title="Animals for adoption"
-        description="Browse currently published adoption listings. Each page shows up to 8 animals."
+        description="Browse currently published adoption listings."
       />
 
       {petsQuery.isError ? (
