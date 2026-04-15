@@ -45,6 +45,12 @@ export function updateListing(id: string, payload: ListingPayload) {
   });
 }
 
+export function deleteListing(id: string) {
+  return apiRequest<void>(`/pets/${id}`, {
+    method: "DELETE"
+  });
+}
+
 export function submitListing(id: string, action: "submit" | "mark-adopted") {
   return apiRequest<{ listing: PetListing }>(`/pets/${id}/status`, {
     method: "PATCH",
@@ -59,5 +65,11 @@ export function uploadListingImages(id: string, files: File[]) {
   return apiRequest<{ images: { id: string; imageUrl: string }[] }>(`/pets/${id}/images`, {
     method: "POST",
     formData
+  });
+}
+
+export function deleteListingImage(listingId: string, imageId: string) {
+  return apiRequest<void>(`/pets/${listingId}/images/${imageId}`, {
+    method: "DELETE"
   });
 }

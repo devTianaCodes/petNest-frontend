@@ -7,6 +7,7 @@ import { AdminUsersPage } from "../pages/AdminUsersPage";
 import { BrowsePetsPage } from "../pages/BrowsePetsPage";
 import { CreateListingPage } from "../pages/CreateListingPage";
 import { DashboardPage } from "../pages/DashboardPage";
+import { EditListingPage } from "../pages/EditListingPage";
 import { HomePage } from "../pages/HomePage";
 import { IncomingRequestsPage } from "../pages/IncomingRequestsPage";
 import { LoginPage } from "../pages/LoginPage";
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
           { path: "dashboard", element: <DashboardPage /> },
           { path: "dashboard/listings", element: <MyListingsPage /> },
           { path: "dashboard/listings/new", element: <CreateListingPage /> },
+          { path: "dashboard/listings/:id/edit", element: <EditListingPage /> },
           { path: "dashboard/profile", element: <ProfileSettingsPage /> },
           { path: "dashboard/requests/incoming", element: <IncomingRequestsPage /> },
           { path: "dashboard/requests/outgoing", element: <OutgoingRequestsPage /> }

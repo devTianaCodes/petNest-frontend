@@ -1,12 +1,27 @@
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getMyListings, submitListing } from "../api/pets";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteListing, getMyListings, submitListing } from "../api/pets";
 import { PetCard } from "../components/PetCard";
 
 export function MyListingsPage() {
+  const queryClient = useQueryClient();
   const listingsQuery = useQuery({
     queryKey: ["my-listings"],
     queryFn: getMyListings
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: ({ id, action }: { id: string; action: "submit" | "mark-adopted" }) => submitListing(id, action),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteListing(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+    }
   });
 
   return (
@@ -25,15 +40,42 @@ export function MyListingsPage() {
         {listingsQuery.data?.items.map((listing) => (
           <div key={listing.id} className="space-y-4">
             <PetCard pet={listing} showStatus />
-            {listing.status === "DRAFT" || listing.status === "REJECTED" ? (
-              <button
-                type="button"
-                className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white"
-                onClick={() => void submitListing(listing.id, "submit")}
-              >
-                Submit for approval
-              </button>
-            ) : null}
+            <div className="flex flex-wrap gap-3">
+              {(listing.status === "DRAFT" || listing.status === "REJECTED") && (
+                <>
+                  <Link
+                    to={`/dashboard/listings/${listing.id}/edit`}
+                    className="rounded-full border border-ink/10 px-5 py-3 text-sm font-medium text-ink"
+                  >
+                    Edit listing
+                  </Link>
+                  <button
+                    type="button"
+                    className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white"
+                    onClick={() => submitMutation.mutate({ id: listing.id, action: "submit" })}
+                  >
+                    Submit for approval
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-full bg-rose-600 px-5 py-3 text-sm font-medium text-white"
+                    onClick={() => deleteMutation.mutate(listing.id)}
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+
+              {listing.status === "PUBLISHED" && (
+                <button
+                  type="button"
+                  className="rounded-full bg-sky-700 px-5 py-3 text-sm font-medium text-white"
+                  onClick={() => submitMutation.mutate({ id: listing.id, action: "mark-adopted" })}
+                >
+                  Mark adopted
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
