@@ -14,6 +14,9 @@ export function NavBar() {
           PetNest
         </Link>
         <nav className="flex items-center gap-2 text-ink">
+          <NavLink to="/adopt" className={sharedLinkClass}>
+            Adopt
+          </NavLink>
           <NavLink to="/browse" className={sharedLinkClass}>
             Browse
           </NavLink>

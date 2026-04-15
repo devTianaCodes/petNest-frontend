@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteListing, getMyListings, submitListing } from "../api/pets";
 import { PetCard } from "../components/PetCard";
+import { QueryStateNotice } from "../components/QueryStateNotice";
 
 export function MyListingsPage() {
   const queryClient = useQueryClient();
@@ -37,7 +38,16 @@ export function MyListingsPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {listingsQuery.data?.items.map((listing) => (
+        {listingsQuery.isError ? (
+          <QueryStateNotice
+            title="Listings could not load"
+            message={(listingsQuery.error as Error).message || "Your listings could not be fetched."}
+            tone="error"
+          />
+        ) : listingsQuery.isLoading ? (
+          <QueryStateNotice title="Loading listings" message="Fetching your current drafts and published listings." />
+        ) : listingsQuery.data?.items.length ? (
+          listingsQuery.data.items.map((listing) => (
           <div key={listing.id} className="space-y-4">
             <PetCard pet={listing} showStatus />
             <div className="flex flex-wrap gap-3">
@@ -77,7 +87,13 @@ export function MyListingsPage() {
               )}
             </div>
           </div>
-        ))}
+          ))
+        ) : (
+          <QueryStateNotice
+            title="No listings yet"
+            message="Create your first pet listing to start the adoption flow."
+          />
+        )}
       </div>
     </div>
   );

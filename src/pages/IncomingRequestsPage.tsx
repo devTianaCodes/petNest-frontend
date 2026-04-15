@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getIncomingRequests, updateAdoptionRequestStatus } from "../api/adoption-requests";
+import { QueryStateNotice } from "../components/QueryStateNotice";
 
 export function IncomingRequestsPage() {
   const requestsQuery = useQuery({
@@ -14,7 +15,16 @@ export function IncomingRequestsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-4xl font-semibold tracking-tight text-ink">Incoming requests</h1>
-      {requestsQuery.data?.items.map((request) => (
+      {requestsQuery.isError ? (
+        <QueryStateNotice
+          title="Requests could not load"
+          message={(requestsQuery.error as Error).message || "Incoming requests could not be fetched."}
+          tone="error"
+        />
+      ) : requestsQuery.isLoading ? (
+        <QueryStateNotice title="Loading requests" message="Fetching incoming adoption requests." />
+      ) : requestsQuery.data?.items.length ? (
+        requestsQuery.data.items.map((request) => (
         <article key={request.id} className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -38,7 +48,10 @@ export function IncomingRequestsPage() {
           </div>
           <p className="mt-4 text-sm leading-6 text-stone-700">{request.message}</p>
         </article>
-      ))}
+        ))
+      ) : (
+        <QueryStateNotice title="No requests yet" message="Adoption requests for your listings will appear here." />
+      )}
     </div>
   );
 }

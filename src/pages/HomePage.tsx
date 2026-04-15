@@ -14,8 +14,8 @@ export function HomePage() {
             way to connect.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link to="/browse" className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-white">
-              Browse pets
+            <Link to="/adopt" className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-white">
+              View animals
             </Link>
             <Link to="/register" className="rounded-full border border-ink/10 px-6 py-3 text-sm font-medium text-ink">
               Start listing

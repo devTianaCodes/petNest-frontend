@@ -4,6 +4,7 @@ import { getCategories } from "../api/categories";
 import { getPets } from "../api/pets";
 import { PageHeader } from "../components/PageHeader";
 import { PetCard } from "../components/PetCard";
+import { QueryStateNotice } from "../components/QueryStateNotice";
 
 export function BrowsePetsPage() {
   const [search, setSearch] = useState("");
@@ -45,6 +46,7 @@ export function BrowsePetsPage() {
           value={category}
           onChange={(event) => setCategory(event.target.value)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
+          disabled={categoriesQuery.isLoading || categoriesQuery.isError}
         >
           <option value="">All categories</option>
           {categoriesQuery.data?.categories.map((item) => (
@@ -56,12 +58,30 @@ export function BrowsePetsPage() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {petsQuery.data?.items.length ? (
+        {categoriesQuery.isError ? (
+          <QueryStateNotice
+            title="Categories could not load"
+            message={(categoriesQuery.error as Error).message || "The backend could not load pet categories."}
+            tone="error"
+          />
+        ) : petsQuery.isError ? (
+          <QueryStateNotice
+            title="Pets could not load"
+            message={(petsQuery.error as Error).message || "The backend could not load pet listings."}
+            tone="error"
+          />
+        ) : categoriesQuery.isLoading || petsQuery.isLoading ? (
+          <QueryStateNotice
+            title="Loading pets"
+            message="Fetching categories and published listings."
+          />
+        ) : petsQuery.data?.items.length ? (
           petsQuery.data.items.map((pet) => <PetCard key={pet.id} pet={pet} />)
         ) : (
-          <div className="rounded-[28px] bg-white p-10 text-center shadow-sm ring-1 ring-black/5">
-            No published listings match the current filters yet.
-          </div>
+          <QueryStateNotice
+            title="No animals to show yet"
+            message="There are no published listings matching the current filters. If this is a fresh database, run the seed data so demo animals appear here."
+          />
         )}
       </section>
     </div>

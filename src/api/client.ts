@@ -15,7 +15,7 @@ type RequestOptions = {
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const headers: HeadersInit = {};
 
-  if (!options.formData) {
+  if (!options.formData && options.body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
 

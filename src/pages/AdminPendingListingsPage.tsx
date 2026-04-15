@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { approveListing, getPendingListings, rejectListing } from "../api/admin";
+import { QueryStateNotice } from "../components/QueryStateNotice";
 
 export function AdminPendingListingsPage() {
   const pendingQuery = useQuery({
@@ -18,7 +19,16 @@ export function AdminPendingListingsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-4xl font-semibold tracking-tight text-ink">Pending listings</h1>
-      {pendingQuery.data?.items.map((listing) => (
+      {pendingQuery.isError ? (
+        <QueryStateNotice
+          title="Pending listings could not load"
+          message={(pendingQuery.error as Error).message || "The moderation queue could not be fetched."}
+          tone="error"
+        />
+      ) : pendingQuery.isLoading ? (
+        <QueryStateNotice title="Loading moderation queue" message="Fetching pending pet listings." />
+      ) : pendingQuery.data?.items.length ? (
+        pendingQuery.data.items.map((listing) => (
         <article key={listing.id} className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -44,7 +54,10 @@ export function AdminPendingListingsPage() {
           </div>
           <p className="mt-4 text-sm leading-6 text-stone-700">{listing.description}</p>
         </article>
-      ))}
+        ))
+      ) : (
+        <QueryStateNotice title="No pending listings" message="Nothing is waiting for admin review right now." />
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { createAdoptionRequest } from "../api/adoption-requests";
 import { getPet } from "../api/pets";
+import { QueryStateNotice } from "../components/QueryStateNotice";
 import { useAuth } from "../features/auth/AuthContext";
 
 export function PetDetailsPage() {
@@ -22,8 +23,18 @@ export function PetDetailsPage() {
   const pet = petQuery.data?.listing;
   const breedLabel = [pet?.breedPrimary, pet?.breedSecondary].filter(Boolean).join(" / ");
 
+  if (petQuery.isError) {
+    return (
+      <QueryStateNotice
+        title="Listing unavailable"
+        message={(petQuery.error as Error).message || "The pet details could not be loaded."}
+        tone="error"
+      />
+    );
+  }
+
   if (!pet) {
-    return <div className="rounded-[28px] bg-white p-10 shadow-sm ring-1 ring-black/5">Loading listing...</div>;
+    return <QueryStateNotice title="Loading listing" message="Fetching pet details." />;
   }
 
   return (

@@ -4,6 +4,7 @@ import { ProtectedRoute } from "../components/ProtectedRoute";
 import { AdminDashboardPage } from "../pages/AdminDashboardPage";
 import { AdminPendingListingsPage } from "../pages/AdminPendingListingsPage";
 import { AdminUsersPage } from "../pages/AdminUsersPage";
+import { AdoptPage } from "../pages/AdoptPage";
 import { BrowsePetsPage } from "../pages/BrowsePetsPage";
 import { CreateListingPage } from "../pages/CreateListingPage";
 import { DashboardPage } from "../pages/DashboardPage";
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: "adopt", element: <AdoptPage /> },
       { path: "browse", element: <BrowsePetsPage /> },
       { path: "pets/:id", element: <PetDetailsPage /> },
       { path: "login", element: <LoginPage /> },
