@@ -4,11 +4,27 @@ import { StatusBadge } from "./StatusBadge";
 
 export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStatus?: boolean }) {
   const coverImage = pet.images[0]?.imageUrl ?? "https://placehold.co/640x420?text=PetNest";
+  const hoverImage = pet.images[1]?.imageUrl;
   const breedLabel = [pet.breedPrimary, pet.breedSecondary].filter(Boolean).join(" / ");
 
   return (
-    <article className="overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
-      <img src={coverImage} alt={pet.name} className="h-56 w-full object-cover" />
+    <article className="group overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
+      <div className="relative h-56 w-full overflow-hidden bg-stone-100">
+        <img
+          src={coverImage}
+          alt={pet.name}
+          className={`absolute inset-0 h-full w-full object-cover transition duration-500 ${
+            hoverImage ? "opacity-100 group-hover:opacity-0" : ""
+          }`}
+        />
+        {hoverImage ? (
+          <img
+            src={hoverImage}
+            alt={`${pet.name} alternate view`}
+            className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
+          />
+        ) : null}
+      </div>
       <div className="space-y-4 p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
