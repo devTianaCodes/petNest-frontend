@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import type { PetListing } from "../types/pets";
 import { StatusBadge } from "./StatusBadge";
+import { getPetCardMeta } from "./petCardMeta";
 
 export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStatus?: boolean }) {
-  const coverImage = pet.images[0]?.imageUrl ?? "https://placehold.co/640x420?text=PetNest";
-  const hoverImage = pet.images[1]?.imageUrl;
-  const breedLabel = [pet.breedPrimary, pet.breedSecondary].filter(Boolean).join(" / ");
+  const { coverImage, hoverImage, detailLabel } = getPetCardMeta(pet);
 
   return (
     <article className="group overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
@@ -39,7 +38,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
         <p className="line-clamp-3 text-sm leading-6 text-stone-700">{pet.description}</p>
         <div className="flex items-center justify-between">
           <p className="text-sm text-stone-500">
-            {pet.ageLabel} • {breedLabel || pet.sex.toLowerCase()}
+            {detailLabel}
           </p>
           <Link to={`/pets/${pet.id}`} className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-white">
             View

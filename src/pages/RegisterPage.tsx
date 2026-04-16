@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../features/auth/AuthContext";
+import { getRegisterValidationState } from "../features/auth/registerValidation";
 
 export function RegisterPage() {
   const { signUp } = useAuth();
@@ -11,15 +12,13 @@ export function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const trimmedName = fullName.trim();
-  const trimmedEmail = email.trim();
-  const passwordMismatch = confirmPassword.length > 0 && password !== confirmPassword;
-  const canSubmit =
-    trimmedName.length >= 2 &&
-    trimmedEmail.includes("@") &&
-    password.length >= 8 &&
-    !passwordMismatch &&
-    !isSubmitting;
+  const validation = getRegisterValidationState({
+    fullName,
+    email,
+    password,
+    confirmPassword,
+    isSubmitting
+  });
 
   return (
     <section className="mx-auto max-w-lg rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-black/5">
@@ -41,7 +40,7 @@ export function RegisterPage() {
 
           setIsSubmitting(true);
           try {
-            const response = await signUp({ fullName: trimmedName, email: trimmedEmail, password });
+            const response = await signUp({ fullName: validation.trimmedName, email: validation.trimmedEmail, password });
             setVerificationUrl(response.verificationUrl);
           } catch (registerError) {
             setError((registerError as Error).message);
@@ -77,13 +76,13 @@ export function RegisterPage() {
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}
         />
-        {password.length > 0 && password.length < 8 ? (
+        {password.length > 0 && !validation.hasValidPassword ? (
           <p className="text-sm text-rose-700">Password must be at least 8 characters.</p>
         ) : null}
-        {!trimmedEmail.includes("@") && trimmedEmail.length > 0 ? (
+        {!validation.hasValidEmail && validation.trimmedEmail.length > 0 ? (
           <p className="text-sm text-rose-700">Enter a valid email address.</p>
         ) : null}
-        {passwordMismatch ? <p className="text-sm text-rose-700">Passwords do not match.</p> : null}
+        {validation.passwordMismatch ? <p className="text-sm text-rose-700">Passwords do not match.</p> : null}
         {error ? <p className="text-sm text-rose-700">{error}</p> : null}
         {verificationUrl ? (
           <div className="rounded-2xl bg-sand/60 p-4 text-sm text-stone-800">
@@ -92,7 +91,7 @@ export function RegisterPage() {
         ) : null}
         <button
           type="submit"
-          disabled={!canSubmit}
+          disabled={!validation.canSubmit}
           className="rounded-full bg-fern px-6 py-3 text-sm font-medium text-white disabled:opacity-70"
         >
           {isSubmitting ? "Registering..." : "Register"}

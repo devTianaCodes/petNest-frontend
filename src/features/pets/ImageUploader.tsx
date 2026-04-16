@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatImageSizeKb, getImageLimitError } from "./imageSelection";
 
 type SelectedImage = {
   file: File;
@@ -44,8 +45,9 @@ export function ImageUploader({
           multiple
           onChange={(event) => {
             const selected = Array.from(event.target.files ?? []);
-            if (selected.length > maxFiles) {
-              setError(`You can only upload up to ${maxFiles} image${maxFiles === 1 ? "" : "s"}.`);
+            const limitError = getImageLimitError(selected.length, maxFiles);
+            if (limitError) {
+              setError(limitError);
               return;
             }
 
@@ -62,7 +64,7 @@ export function ImageUploader({
                 <div className="space-y-3 p-3 text-sm text-stone-700">
                   <div>
                     <p className="truncate font-medium text-ink">{selectedImage.file.name}</p>
-                    <p>{Math.round(selectedImage.file.size / 1024)} KB</p>
+                    <p>{formatImageSizeKb(selectedImage.file.size)}</p>
                   </div>
                   <button
                     type="button"
