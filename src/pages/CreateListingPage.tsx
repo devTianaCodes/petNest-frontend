@@ -1,24 +1,29 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCategories } from "../api/categories";
 import { createListing, uploadListingImages } from "../api/pets";
 import { QueryStateNotice } from "../components/QueryStateNotice";
+import { getCreateListingProgress } from "../features/pets/createListingFlow";
 import { ImageUploader } from "../features/pets/ImageUploader";
 import { ListingForm, type ListingFormValues } from "../features/pets/ListingForm";
 
 export function CreateListingPage() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories
   });
   const [listingId, setListingId] = useState<string | null>(null);
+  const [hasUploadedImages, setHasUploadedImages] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const progress = getCreateListingProgress({
+    hasListingId: Boolean(listingId),
+    hasUploadedImages
+  });
 
   async function handleSubmit(values: ListingFormValues) {
     setIsSaving(true);
@@ -27,6 +32,7 @@ export function CreateListingPage() {
     try {
       const response = await createListing(values);
       setListingId(response.listing.id);
+      setHasUploadedImages(false);
       await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
       setMessage("Listing saved. Upload images next, then submit it from your listings dashboard.");
     } catch (saveError) {
@@ -42,6 +48,21 @@ export function CreateListingPage() {
         <h1 className="text-4xl font-semibold tracking-tight text-ink">Create listing</h1>
         <p className="mt-2 text-stone-700">Save the pet details first, then upload up to three photos.</p>
       </div>
+
+      <section className="rounded-[28px] bg-sand/55 p-6 shadow-sm ring-1 ring-black/5">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">{progress.title}</p>
+        <p className="mt-2 text-sm leading-6 text-stone-700">{progress.description}</p>
+        {listingId ? (
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link to={`/dashboard/listings/${listingId}/edit`} className="rounded-full border border-ink/10 px-5 py-3 text-sm font-medium text-ink">
+              Continue editing
+            </Link>
+            <Link to="/dashboard/listings" className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white">
+              Open my listings
+            </Link>
+          </div>
+        ) : null}
+      </section>
 
       {categoriesQuery.isError ? (
         <QueryStateNotice
@@ -77,8 +98,8 @@ export function CreateListingPage() {
             try {
               await uploadListingImages(listingId, files);
               await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
-              setMessage("Images uploaded.");
-              navigate("/dashboard/listings");
+              setHasUploadedImages(true);
+              setMessage("Images uploaded. Review the draft, then submit it from My listings when you are ready.");
             } catch (uploadError) {
               setError((uploadError as Error).message);
             } finally {
