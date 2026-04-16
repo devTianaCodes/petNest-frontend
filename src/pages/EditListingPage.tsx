@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getCategories } from "../api/categories";
 import { deleteListingImage, getPet, updateListing, uploadListingImages } from "../api/pets";
+import { QueryStateNotice } from "../components/QueryStateNotice";
 import { ListingForm, type ListingFormValues } from "../features/pets/ListingForm";
 import { ImageUploader } from "../features/pets/ImageUploader";
 
@@ -65,8 +66,28 @@ export function EditListingPage() {
 
   const listing = listingQuery.data?.listing;
 
-  if (!listing || !categoriesQuery.data) {
-    return <div className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-black/5">Loading listing...</div>;
+  if (categoriesQuery.isError) {
+    return (
+      <QueryStateNotice
+        title="Categories unavailable"
+        message={(categoriesQuery.error as Error).message || "The category list could not be loaded for editing."}
+        tone="error"
+      />
+    );
+  }
+
+  if (listingQuery.isError) {
+    return (
+      <QueryStateNotice
+        title="Listing unavailable"
+        message={(listingQuery.error as Error).message || "The listing could not be loaded for editing."}
+        tone="error"
+      />
+    );
+  }
+
+  if (categoriesQuery.isLoading || listingQuery.isLoading || !listing || !categoriesQuery.data) {
+    return <QueryStateNotice title="Loading listing" message="Fetching listing details and categories." />;
   }
 
   return (

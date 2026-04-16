@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
+import { getLoginValidationState } from "../features/auth/loginValidation";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -8,6 +9,12 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const validation = getLoginValidationState({
+    email,
+    password,
+    isSubmitting
+  });
 
   return (
     <section className="mx-auto max-w-lg rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-black/5">
@@ -18,11 +25,14 @@ export function LoginPage() {
         onSubmit={async (event) => {
           event.preventDefault();
           setError(null);
+          setIsSubmitting(true);
           try {
-            await signIn({ email, password });
+            await signIn({ email: validation.trimmedEmail, password });
             navigate("/dashboard");
           } catch (authError) {
             setError((authError as Error).message);
+          } finally {
+            setIsSubmitting(false);
           }
         }}
       >
@@ -40,9 +50,19 @@ export function LoginPage() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
+        {!validation.hasValidEmail && validation.trimmedEmail.length > 0 ? (
+          <p className="text-sm text-rose-700">Enter a valid email address.</p>
+        ) : null}
+        {password.length > 0 && !validation.hasValidPassword ? (
+          <p className="text-sm text-rose-700">Password must be at least 8 characters.</p>
+        ) : null}
         {error ? <p className="text-sm text-rose-700">{error}</p> : null}
-        <button type="submit" className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-white">
-          Log in
+        <button
+          type="submit"
+          disabled={!validation.canSubmit}
+          className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-white disabled:opacity-70"
+        >
+          {isSubmitting ? "Logging in..." : "Log in"}
         </button>
       </form>
     </section>
