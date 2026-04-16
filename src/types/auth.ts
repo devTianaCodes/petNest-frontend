@@ -11,6 +11,7 @@ export type AuthUser = {
   phone?: string | null;
   city?: string | null;
   state?: string | null;
+  createdAt?: string;
 };
 
 export type AuthResponse = {

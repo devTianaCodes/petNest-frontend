@@ -11,6 +11,7 @@ export function EditListingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
@@ -26,27 +27,39 @@ export function EditListingPage() {
   const saveMutation = useMutation({
     mutationFn: (values: ListingFormValues) => updateListing(id, values),
     onSuccess: async () => {
+      setError(null);
       setMessage("Listing updated.");
       await queryClient.invalidateQueries({ queryKey: ["pet", id] });
       await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+    },
+    onError: (mutationError) => {
+      setError((mutationError as Error).message);
     }
   });
 
   const uploadMutation = useMutation({
     mutationFn: (files: File[]) => uploadListingImages(id, files),
     onSuccess: async () => {
+      setError(null);
       setMessage("Images uploaded.");
       await queryClient.invalidateQueries({ queryKey: ["pet", id] });
       await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+    },
+    onError: (mutationError) => {
+      setError((mutationError as Error).message);
     }
   });
 
   const deleteImageMutation = useMutation({
     mutationFn: (imageId: string) => deleteListingImage(id, imageId),
     onSuccess: async () => {
+      setError(null);
       setMessage("Image removed.");
       await queryClient.invalidateQueries({ queryKey: ["pet", id] });
       await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+    },
+    onError: (mutationError) => {
+      setError((mutationError as Error).message);
     }
   });
 
@@ -80,6 +93,9 @@ export function EditListingPage() {
       {message ? (
         <div className="rounded-[28px] bg-sand/60 p-5 text-sm text-stone-800 shadow-sm ring-1 ring-black/5">{message}</div>
       ) : null}
+      {error ? (
+        <div className="rounded-[28px] bg-rose-50 p-5 text-sm text-rose-900 shadow-sm ring-1 ring-rose-200">{error}</div>
+      ) : null}
 
       <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -104,10 +120,15 @@ export function EditListingPage() {
                 <div className="p-4">
                   <button
                     type="button"
-                    className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white"
-                    onClick={() => deleteImageMutation.mutate(image.id)}
+                    disabled={deleteImageMutation.isPending}
+                    className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
+                    onClick={() => {
+                      setMessage(null);
+                      setError(null);
+                      deleteImageMutation.mutate(image.id);
+                    }}
                   >
-                    Remove image
+                    {deleteImageMutation.isPending && deleteImageMutation.variables === image.id ? "Removing..." : "Remove image"}
                   </button>
                 </div>
               </article>
@@ -121,8 +142,12 @@ export function EditListingPage() {
       {listing.images.length < 3 ? (
         <ImageUploader
           onUpload={async (files) => {
+            setMessage(null);
+            setError(null);
             await uploadMutation.mutateAsync(files);
           }}
+          isUploading={uploadMutation.isPending}
+          maxFiles={3 - listing.images.length}
         />
       ) : (
         <div className="rounded-[28px] bg-white p-6 text-stone-700 shadow-sm ring-1 ring-black/5">

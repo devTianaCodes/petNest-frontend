@@ -22,3 +22,10 @@ export function rejectListing(id: string, rejectionReason: string) {
 export function getUsers() {
   return apiRequest<{ users: AuthUser[] }>("/admin/users");
 }
+
+export function updateUserStatus(id: string, status: "ACTIVE" | "SUSPENDED") {
+  return apiRequest<{ user: AuthUser }>(`/admin/users/${id}/status`, {
+    method: "PATCH",
+    body: { status }
+  });
+}
