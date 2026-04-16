@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteListing, getMyListings, submitListing } from "../api/pets";
 import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
+import { getListingStatusMeta } from "../features/pets/listingStatusMeta";
 
 export function MyListingsPage() {
   const queryClient = useQueryClient();
@@ -63,6 +64,7 @@ export function MyListingsPage() {
         <QueryStateNotice title="Loading listings" message="Fetching your current drafts and published listings." />
       ) : listingsQuery.data?.items.length ? (
         listingsQuery.data.items.map((listing) => {
+          const statusMeta = getListingStatusMeta(listing);
           const isSubmittingForApproval =
             submitMutation.isPending && submitMutation.variables?.id === listing.id && submitMutation.variables.action === "submit";
           const isMarkingAdopted =
@@ -72,6 +74,10 @@ export function MyListingsPage() {
           return (
             <div key={listing.id} className="space-y-4">
               <PetCard pet={listing} showStatus />
+              <div className="rounded-[24px] bg-white p-5 shadow-sm ring-1 ring-black/5">
+                <h2 className="text-lg font-semibold text-ink">{statusMeta.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-stone-700">{statusMeta.description}</p>
+              </div>
               <div className="flex flex-wrap gap-3">
                 {(listing.status === "DRAFT" || listing.status === "REJECTED") && (
                   <>

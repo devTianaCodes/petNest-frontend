@@ -6,6 +6,7 @@ import { deleteListingImage, getPet, updateListing, uploadListingImages } from "
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { ListingForm, type ListingFormValues } from "../features/pets/ListingForm";
 import { ImageUploader } from "../features/pets/ImageUploader";
+import { getListingStatusMeta } from "../features/pets/listingStatusMeta";
 
 export function EditListingPage() {
   const { id = "" } = useParams();
@@ -90,6 +91,8 @@ export function EditListingPage() {
     return <QueryStateNotice title="Loading listing" message="Fetching listing details and categories." />;
   }
 
+  const statusMeta = getListingStatusMeta(listing);
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-4">
@@ -101,6 +104,11 @@ export function EditListingPage() {
           Back to listings
         </Link>
       </div>
+
+      <section className="rounded-[28px] bg-sand/55 p-6 shadow-sm ring-1 ring-black/5">
+        <h2 className="text-xl font-semibold text-ink">Current status: {statusMeta.title}</h2>
+        <p className="mt-2 text-sm leading-6 text-stone-700">{statusMeta.description}</p>
+      </section>
 
       <ListingForm
         categories={categoriesQuery.data.categories}
