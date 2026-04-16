@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
+import { getPostLoginRedirect } from "../features/auth/authRedirect";
 import { getLoginValidationState } from "../features/auth/loginValidation";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +30,7 @@ export function LoginPage() {
           setIsSubmitting(true);
           try {
             await signIn({ email: validation.trimmedEmail, password });
-            navigate("/dashboard");
+            navigate(getPostLoginRedirect(searchParams.get("redirect")), { replace: true });
           } catch (authError) {
             setError((authError as Error).message);
           } finally {

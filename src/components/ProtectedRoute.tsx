@@ -1,5 +1,7 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { QueryStateNotice } from "./QueryStateNotice";
 import { useAuth } from "../features/auth/AuthContext";
+import { getProtectedRedirect } from "../features/auth/authRedirect";
 
 type ProtectedRouteProps = {
   role?: "ADMIN";
@@ -7,13 +9,14 @@ type ProtectedRouteProps = {
 
 export function ProtectedRoute({ role }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
-    return <div className="rounded-3xl bg-white/80 p-10 text-center shadow-sm">Loading...</div>;
+    return <QueryStateNotice title="Checking your session" message="Confirming your account access." />;
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={getProtectedRedirect(location.pathname, location.search)} replace />;
   }
 
   if (role && user.role !== role) {
