@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import type { Category, PetListing } from "../../types/pets";
 
-const listingSchema = z.object({
+export const listingSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   name: z.string().min(2, "Name is required"),
   description: z.string().min(30, "Description should be more detailed"),
@@ -108,6 +108,7 @@ export function ListingForm({
       <label className="space-y-2">
         <span className="text-sm font-medium">Age</span>
         <input className="w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("ageLabel")} />
+        <FieldError message={form.formState.errors.ageLabel?.message} />
       </label>
 
       <label className="space-y-2">
@@ -177,16 +178,19 @@ export function ListingForm({
       <label className="space-y-2">
         <span className="text-sm font-medium">City</span>
         <input className="w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("city")} />
+        <FieldError message={form.formState.errors.city?.message} />
       </label>
 
       <label className="space-y-2">
         <span className="text-sm font-medium">State</span>
         <input className="w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("state")} />
+        <FieldError message={form.formState.errors.state?.message} />
       </label>
 
       <label className="space-y-2">
         <span className="text-sm font-medium">Contact email</span>
         <input className="w-full rounded-2xl border border-stone-200 px-4 py-3" {...form.register("contactEmail")} />
+        <FieldError message={form.formState.errors.contactEmail?.message} />
       </label>
 
       <label className="space-y-2">
