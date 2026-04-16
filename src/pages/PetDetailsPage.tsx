@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { createAdoptionRequest } from "../api/adoption-requests";
 import { getPet } from "../api/pets";
 import { QueryStateNotice } from "../components/QueryStateNotice";
+import { getAdoptionRequestFormState } from "../features/adoption/requestState";
 import { useAuth } from "../features/auth/AuthContext";
 
 export function PetDetailsPage() {
@@ -39,6 +40,13 @@ export function PetDetailsPage() {
 
   const pet = petQuery.data?.listing;
   const breedLabel = [pet?.breedPrimary, pet?.breedSecondary].filter(Boolean).join(" / ");
+  const requestFormState = getAdoptionRequestFormState({
+    userId: user?.id,
+    ownerId: pet?.owner?.id,
+    listingStatus: pet?.status ?? "PUBLISHED",
+    message,
+    isSubmitting: requestMutation.isPending
+  });
 
   if (petQuery.isError) {
     return (
@@ -117,6 +125,9 @@ export function PetDetailsPage() {
                 onChange={(event) => setMessage(event.target.value)}
                 placeholder="Explain your home, experience, and why this pet is a fit."
               />
+              <p className="mt-2 text-xs text-stone-500">
+                {requestFormState.trimmedMessage.length}/20 minimum characters
+              </p>
               <div className="mt-4 grid gap-3 text-sm text-stone-700">
                 <label className="flex items-center gap-3">
                   <input type="checkbox" checked={hasOtherPets} onChange={(event) => setHasOtherPets(event.target.checked)} />
@@ -131,14 +142,17 @@ export function PetDetailsPage() {
                 type="button"
                 className="mt-4 rounded-full bg-fern px-5 py-3 text-sm font-medium text-white disabled:opacity-70"
                 onClick={() => requestMutation.mutate()}
-                disabled={requestMutation.isPending || message.trim().length < 20}
+                disabled={!requestFormState.canSubmit}
               >
                 {requestMutation.isPending ? "Sending request..." : "Submit request"}
               </button>
+              {!requestFormState.canSubmit ? <p className="mt-3 text-sm text-stone-600">{requestFormState.disabledReason}</p> : null}
               {requestMutation.isError ? (
                 <p className="mt-3 text-sm text-rose-700">{(requestMutation.error as Error).message}</p>
               ) : null}
-              {requestMutation.isSuccess ? <p className="mt-3 text-sm text-emerald-700">Request sent.</p> : null}
+              {requestMutation.isSuccess ? (
+                <p className="mt-3 text-sm text-emerald-700">Request sent. Track it from your outgoing requests dashboard.</p>
+              ) : null}
             </>
           ) : (
             <p className="mt-4 text-sm text-stone-700">Log in to submit an adoption request.</p>
