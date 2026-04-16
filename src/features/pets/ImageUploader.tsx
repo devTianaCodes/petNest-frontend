@@ -1,12 +1,13 @@
 import { useState } from "react";
 
 export function ImageUploader({
-  onUpload
+  onUpload,
+  isUploading: externalIsUploading = false
 }: {
   onUpload: (files: File[]) => Promise<void>;
+  isUploading?: boolean;
 }) {
   const [files, setFiles] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   return (
@@ -41,19 +42,18 @@ export function ImageUploader({
         {error ? <p className="text-sm text-rose-700">{error}</p> : null}
         <button
           type="button"
-          disabled={!files.length || isUploading}
+          disabled={!files.length || externalIsUploading}
           className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white disabled:opacity-70"
           onClick={async () => {
-            setIsUploading(true);
             try {
               await onUpload(files);
               setFiles([]);
-            } finally {
-              setIsUploading(false);
+            } catch (uploadError) {
+              setError((uploadError as Error).message);
             }
           }}
         >
-          {isUploading ? "Uploading..." : "Upload images"}
+          {externalIsUploading ? "Uploading..." : "Upload images"}
         </button>
       </div>
     </section>

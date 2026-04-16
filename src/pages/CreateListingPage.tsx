@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCategories } from "../api/categories";
 import { createListing, uploadListingImages } from "../api/pets";
 import { QueryStateNotice } from "../components/QueryStateNotice";
@@ -9,20 +9,28 @@ import { ListingForm, type ListingFormValues } from "../features/pets/ListingFor
 
 export function CreateListingPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories
   });
   const [listingId, setListingId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(values: ListingFormValues) {
     setIsSaving(true);
+    setError(null);
+    setMessage(null);
     try {
       const response = await createListing(values);
       setListingId(response.listing.id);
+      await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
       setMessage("Listing saved. Upload images next, then submit it from your listings dashboard.");
+    } catch (saveError) {
+      setError((saveError as Error).message);
     } finally {
       setIsSaving(false);
     }
@@ -56,13 +64,28 @@ export function CreateListingPage() {
       {message ? (
         <div className="rounded-[28px] bg-sand/60 p-5 text-sm text-stone-800 shadow-sm ring-1 ring-black/5">{message}</div>
       ) : null}
+      {error ? (
+        <div className="rounded-[28px] bg-rose-50 p-5 text-sm text-rose-900 shadow-sm ring-1 ring-rose-200">{error}</div>
+      ) : null}
 
       {listingId ? (
         <ImageUploader
           onUpload={async (files) => {
-            await uploadListingImages(listingId, files);
-            navigate("/dashboard/listings");
+            setIsUploading(true);
+            setError(null);
+            setMessage(null);
+            try {
+              await uploadListingImages(listingId, files);
+              await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+              setMessage("Images uploaded.");
+              navigate("/dashboard/listings");
+            } catch (uploadError) {
+              setError((uploadError as Error).message);
+            } finally {
+              setIsUploading(false);
+            }
           }}
+          isUploading={isUploading}
         />
       ) : (
         <div className="rounded-[28px] bg-white p-6 text-sm text-stone-700 shadow-sm ring-1 ring-black/5">

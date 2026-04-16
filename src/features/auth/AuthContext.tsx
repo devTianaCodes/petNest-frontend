@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { fetchCurrentUser, login, logout, refreshSession, register } from "../../api/auth";
+import { login, logout, refreshSession, register } from "../../api/auth";
 import { setAccessToken } from "../../api/client";
 import type { AuthUser } from "../../types/auth";
 
@@ -53,9 +53,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(response.user);
     setToken(response.accessToken);
     setAccessToken(response.accessToken);
-
-    const current = await fetchCurrentUser();
-    setUser((previous) => ({ ...previous, ...current.user } as AuthUser));
   }
 
   return (
