@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCategories } from "../api/categories";
-import { createListing, uploadListingImages } from "../api/pets";
+import { createListing, submitListing, uploadListingImages } from "../api/pets";
 import { QueryStateNotice } from "../components/QueryStateNotice";
-import { getCreateListingProgress } from "../features/pets/createListingFlow";
+import { useAuth } from "../features/auth/AuthContext";
+import { getCreateListingProgress, getCreateListingSubmitState } from "../features/pets/createListingFlow";
 import { ImageUploader } from "../features/pets/ImageUploader";
 import { ListingForm, type ListingFormValues } from "../features/pets/ListingForm";
 
 export function CreateListingPage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories
@@ -23,6 +25,24 @@ export function CreateListingPage() {
   const progress = getCreateListingProgress({
     hasListingId: Boolean(listingId),
     hasUploadedImages
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: () => submitListing(listingId!, "submit"),
+    onSuccess: async () => {
+      setError(null);
+      setMessage("Listing submitted for approval. Track its moderation status from My listings.");
+      await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+    },
+    onError: (submitError) => {
+      setError((submitError as Error).message);
+    }
+  });
+  const submitState = getCreateListingSubmitState({
+    hasListingId: Boolean(listingId),
+    hasUploadedImages,
+    isEmailVerified: Boolean(user?.isEmailVerified),
+    isSubmitting: submitMutation.isPending
   });
 
   async function handleSubmit(values: ListingFormValues) {
@@ -60,8 +80,21 @@ export function CreateListingPage() {
             <Link to="/dashboard/listings" className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white">
               Open my listings
             </Link>
+            <button
+              type="button"
+              disabled={!submitState.canSubmit}
+              className="rounded-full bg-fern px-5 py-3 text-sm font-medium text-white disabled:opacity-70"
+              onClick={() => {
+                setMessage(null);
+                setError(null);
+                submitMutation.mutate();
+              }}
+            >
+              {submitMutation.isPending ? "Submitting..." : "Submit for approval"}
+            </button>
           </div>
         ) : null}
+        {listingId ? <p className="mt-4 text-sm text-stone-700">{submitState.description}</p> : null}
       </section>
 
       {categoriesQuery.isError ? (
