@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { getOutgoingRequests, updateAdoptionRequestStatus } from "../api/adoption-requests";
 import { QueryStateNotice } from "../components/QueryStateNotice";
-import { canWithdrawRequest, formatRequestBoolean, formatRequestStatus } from "../features/adoption/requestState";
+import { canWithdrawRequest, formatRequestBoolean } from "../features/adoption/requestState";
+import { getRequestCardMeta } from "../features/adoption/requestCardMeta";
 
 export function OutgoingRequestsPage() {
   const queryClient = useQueryClient();
@@ -36,6 +38,7 @@ export function OutgoingRequestsPage() {
         <QueryStateNotice title="Loading requests" message="Fetching the requests you have sent." />
       ) : requestsQuery.data?.items.length ? (
         requestsQuery.data.items.map((request) => {
+          const meta = getRequestCardMeta(request);
           const isWithdrawing = mutation.isPending && mutation.variables === request.id;
 
           return (
@@ -53,12 +56,11 @@ export function OutgoingRequestsPage() {
                       {request.listing.category?.name ?? "Listing"}
                     </p>
                     <h2 className="mt-1 text-xl font-semibold text-ink">{request.listing.name}</h2>
-                    <p className="mt-1 text-sm text-stone-600">
-                      {request.listing.city}, {request.listing.state}
-                    </p>
+                    <p className="mt-1 text-sm text-stone-600">{meta.listingLocation}</p>
+                    <p className="mt-1 text-sm text-stone-500">Submitted {meta.submittedLabel}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fern">{formatRequestStatus(request.status)}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fern">{meta.statusLabel}</p>
                     {canWithdrawRequest(request.status) ? (
                       <button
                         type="button"
@@ -80,6 +82,14 @@ export function OutgoingRequestsPage() {
                   <p>Children in home: {formatRequestBoolean(request.hasChildren)}</p>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-stone-700">{request.message}</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link to={`/pets/${request.listing.id}`} className="rounded-full border border-stone-200 px-4 py-2 text-sm font-medium text-ink">
+                    Open listing
+                  </Link>
+                  {!canWithdrawRequest(request.status) ? (
+                    <p className="text-sm text-stone-500">This request is no longer withdrawable because it has reached a final decision.</p>
+                  ) : null}
+                </div>
                 {mutation.isError ? <p className="mt-3 text-sm text-rose-700">{(mutation.error as Error).message}</p> : null}
               </div>
             </div>

@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { getIncomingRequests, updateAdoptionRequestStatus } from "../api/adoption-requests";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { canOwnerUpdateRequest, formatRequestBoolean, formatRequestStatus } from "../features/adoption/requestState";
+import { getRequestCardMeta } from "../features/adoption/requestCardMeta";
 
 export function IncomingRequestsPage() {
   const queryClient = useQueryClient();
@@ -37,6 +39,7 @@ export function IncomingRequestsPage() {
         <QueryStateNotice title="Loading requests" message="Fetching incoming adoption requests." />
       ) : requestsQuery.data?.items.length ? (
         requestsQuery.data.items.map((request) => {
+          const meta = getRequestCardMeta(request);
           const isUpdating = mutation.isPending && mutation.variables?.id === request.id;
 
           return (
@@ -56,6 +59,9 @@ export function IncomingRequestsPage() {
                     <h2 className="mt-1 text-xl font-semibold text-ink">{request.listing.name}</h2>
                     <p className="mt-1 text-sm text-stone-600">
                       From {request.requester?.fullName} • {formatRequestStatus(request.status)}
+                    </p>
+                    <p className="mt-1 text-sm text-stone-500">
+                      Submitted {meta.submittedLabel} • {meta.listingLocation}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -102,6 +108,11 @@ export function IncomingRequestsPage() {
                   <p>Children in home: {formatRequestBoolean(request.hasChildren)}</p>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-stone-700">{request.message}</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link to={`/pets/${request.listing.id}`} className="rounded-full border border-stone-200 px-4 py-2 text-sm font-medium text-ink">
+                    Open listing
+                  </Link>
+                </div>
                 {mutation.isError ? <p className="mt-3 text-sm text-rose-700">{(mutation.error as Error).message}</p> : null}
               </div>
             </div>

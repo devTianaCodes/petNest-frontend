@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
+import { getDashboardLinks } from "../features/dashboard/dashboardLinks";
 
 export function DashboardPage() {
   const { user } = useAuth();
+  const links = getDashboardLinks(user);
 
   return (
     <div className="space-y-8">
@@ -22,13 +24,8 @@ export function DashboardPage() {
         ) : null}
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {[
-          ["/dashboard/listings", "My listings", "Create, edit, submit, and review status changes on your adoption posts."],
-          ["/dashboard/requests/incoming", "Incoming requests", "Review adoption requests from interested adopters."],
-          ["/dashboard/requests/outgoing", "Outgoing requests", "Track the requests you have submitted to other listing owners."],
-          ["/dashboard/profile", "Profile settings", "Keep your name, city, and contact details up to date."]
-        ].map(([to, title, description]) => (
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {links.map(({ to, title, description }) => (
           <Link key={to} to={to} className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
             <h2 className="text-xl font-semibold text-ink">{title}</h2>
             <p className="mt-3 text-sm leading-6 text-stone-700">{description}</p>
