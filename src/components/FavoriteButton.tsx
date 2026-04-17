@@ -38,12 +38,18 @@ export function FavoriteButton({
     }
   });
 
-  const baseClassName = `inline-flex items-center justify-center rounded-full border border-black/10 bg-white/95 px-3 py-2 text-sm font-medium text-ink shadow-sm transition hover:border-fern hover:text-fern ${className}`.trim();
+  const buttonClassName = `inline-flex items-center justify-center text-2xl leading-none text-white drop-shadow-sm transition hover:scale-110 hover:text-rose-100 disabled:opacity-70 ${className}`.trim();
+  const label = isFavorite ? "Remove from favorites" : "Save to favorites";
 
   if (!user) {
     return (
-      <Link to={getProtectedRedirect(location.pathname, location.search)} className={baseClassName}>
-        ♡ Save
+      <Link
+        to={getProtectedRedirect(location.pathname, location.search)}
+        className={buttonClassName}
+        aria-label="Log in to save this animal"
+        title="Log in to save this animal"
+      >
+        ♡
       </Link>
     );
   }
@@ -51,11 +57,13 @@ export function FavoriteButton({
   return (
     <button
       type="button"
-      className={baseClassName}
+      className={buttonClassName}
       disabled={mutation.isPending || favoritesQuery.isLoading}
       onClick={() => mutation.mutate()}
+      aria-label={label}
+      title={label}
     >
-      {mutation.isPending ? "..." : isFavorite ? "♥ Saved" : "♡ Save"}
+      {mutation.isPending ? "…" : isFavorite ? "♥" : "♡"}
     </button>
   );
 }

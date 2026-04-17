@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { getProtectedRedirect } from "../features/auth/authRedirect";
 import { useAuth } from "../features/auth/AuthContext";
 
 const sharedLinkClass =
@@ -52,7 +53,7 @@ export function NavBar() {
             </Link>
           </div>
 
-          <nav className="flex flex-wrap items-center justify-end gap-2 text-ink">
+          <nav className="flex flex-wrap items-center justify-end gap-0 text-ink">
             {user?.role === "ADMIN" ? (
               <NavLink to="/admin" className={sharedLinkClass}>
                 Admin
@@ -66,19 +67,27 @@ export function NavBar() {
                 placeholder="Search animals"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                className="w-full rounded-full border border-stone-200 bg-white px-4 py-3 text-sm text-ink"
+                className="w-full rounded-full border border-stone-200 bg-white px-4 py-3 text-sm text-ink outline-none focus:border-fern focus:outline-none focus:ring-0"
               />
               <button type="submit" className="rounded-full bg-fern px-5 py-3 text-sm font-medium text-white">
                 Search
               </button>
             </form>
             <Link
+              to={user ? "/dashboard/favorites" : getProtectedRedirect("/dashboard/favorites")}
+              aria-label={user ? "Open saved favorites" : "Log in to view favorites"}
+              title={user ? "Favorites" : "Log in to view favorites"}
+              className="ml-3 inline-flex items-center justify-center px-1 py-1 text-[1.35rem] transition hover:text-fern"
+            >
+              ♥
+            </Link>
+            <Link
               to={user ? "/dashboard" : "/auth"}
               aria-label={user ? "Open your dashboard" : "Open login and registration"}
               title={user ? "Dashboard" : "Account"}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-ink/10 bg-white transition hover:border-fern/40 hover:text-fern"
+              className="inline-flex items-center justify-center px-1 py-1 transition hover:text-fern"
             >
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <svg viewBox="0 0 24 24" className="h-[1.4rem] w-[1.4rem]" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
                 <path d="M4.5 20.25a7.5 7.5 0 0 1 15 0" />
               </svg>

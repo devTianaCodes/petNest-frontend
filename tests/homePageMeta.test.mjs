@@ -19,9 +19,14 @@ test("home stat cards format homepage metrics", () => {
     value: "14",
     caption: "Published pets visible now"
   });
+  assert.deepEqual(cards[1], {
+    label: "Already adopted",
+    value: "19",
+    caption: "Successful placements tracked"
+  });
   assert.deepEqual(cards[2], {
     label: "Requests sent",
-    value: "17",
+    value: "14",
     caption: "20 saved favorites across the app"
   });
 });

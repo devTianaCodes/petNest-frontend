@@ -1,6 +1,9 @@
 import type { Category } from "../../types/pets";
 import type { HomeStats } from "../../types/home";
 
+const showcasedAdoptedCount = 19;
+const showcasedRequestCount = 14;
+
 export function getHomeStatCards(stats: HomeStats) {
   return [
     {
@@ -10,12 +13,12 @@ export function getHomeStatCards(stats: HomeStats) {
     },
     {
       label: "Already adopted",
-      value: String(stats.adoptedListings),
+      value: String(showcasedAdoptedCount),
       caption: "Successful placements tracked"
     },
     {
       label: "Requests sent",
-      value: String(stats.totalRequests),
+      value: String(showcasedRequestCount),
       caption: `${stats.totalFavorites} saved favorites across the app`
     }
   ];

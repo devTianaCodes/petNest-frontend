@@ -8,7 +8,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
   const { coverImage, hoverImage, detailLabel } = getPetCardMeta(pet);
 
   return (
-    <article className="group overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
       <div className="relative h-56 w-full overflow-hidden bg-stone-100">
         <div className="absolute right-4 top-4 z-10">
           <FavoriteButton listingId={pet.id} />
@@ -28,7 +28,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
           />
         ) : null}
       </div>
-      <div className="space-y-4 p-5">
+      <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fern">{pet.category.name}</p>
@@ -39,11 +39,9 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
           </div>
           {showStatus ? <StatusBadge status={pet.status} /> : null}
         </div>
-        <p className="line-clamp-3 text-sm leading-6 text-stone-700">{pet.description}</p>
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-stone-500">
-            {detailLabel}
-          </p>
+        <p className="mt-4 line-clamp-3 text-sm leading-6 text-stone-700">{pet.description}</p>
+        <div className="mt-auto flex items-center justify-between gap-4 pt-4">
+          <p className="text-sm text-stone-500">{detailLabel}</p>
           <Link to={`/pets/${pet.id}`} className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-white">
             View
           </Link>
