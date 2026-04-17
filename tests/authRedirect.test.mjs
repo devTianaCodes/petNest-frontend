@@ -5,13 +5,14 @@ import { getPostLoginRedirect, getProtectedRedirect } from "../dist-tests/src/fe
 test("protected redirect preserves the intended path and query", () => {
   const redirect = getProtectedRedirect("/dashboard/listings/new", "?step=images");
 
-  assert.equal(redirect, "/login?redirect=%2Fdashboard%2Flistings%2Fnew%3Fstep%3Dimages");
+  assert.equal(redirect, "/auth?redirect=%2Fdashboard%2Flistings%2Fnew%3Fstep%3Dimages");
 });
 
 test("post-login redirect falls back for unsafe or blocked targets", () => {
   assert.equal(getPostLoginRedirect(null), "/dashboard");
   assert.equal(getPostLoginRedirect("https://evil.example"), "/dashboard");
   assert.equal(getPostLoginRedirect("//evil.example/path"), "/dashboard");
+  assert.equal(getPostLoginRedirect("/auth"), "/dashboard");
   assert.equal(getPostLoginRedirect("/login"), "/dashboard");
 });
 

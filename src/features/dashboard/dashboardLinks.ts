@@ -16,6 +16,21 @@ export function getDashboardLinks(user?: Pick<AuthUser, "role" | "isEmailVerifie
         : "Draft a new listing now. You can submit it after verifying your email."
     },
     {
+      to: "/dashboard/favorites",
+      title: "Saved favorites",
+      description: "Revisit the animals you are tracking before you apply."
+    },
+    {
+      to: "/dashboard/searches",
+      title: "Saved searches",
+      description: "Keep your best browse filters ready for one-click reuse."
+    },
+    {
+      to: "/dashboard/analytics",
+      title: "Listing analytics",
+      description: "See how your listings perform across saves, requests, and placements."
+    },
+    {
       to: "/dashboard/listings",
       title: "My listings",
       description: "Create, edit, submit, and review status changes on your adoption posts."

@@ -1,7 +1,7 @@
-const blockedRedirects = new Set(["/login", "/register"]);
+const blockedRedirects = new Set(["/auth", "/login", "/register"]);
 
 export function getProtectedRedirect(pathname: string, search = "") {
-  return `/login?redirect=${encodeURIComponent(`${pathname}${search}`)}`;
+  return `/auth?redirect=${encodeURIComponent(`${pathname}${search}`)}`;
 }
 
 export function getPostLoginRedirect(redirect: string | null | undefined, fallback = "/dashboard") {

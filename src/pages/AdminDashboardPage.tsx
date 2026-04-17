@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { getPendingListings, getUsers } from "../api/admin";
+import { getReports } from "../api/reports";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { getAdminDashboardStats } from "../features/admin/adminDashboardStats";
 
@@ -12,6 +13,10 @@ export function AdminDashboardPage() {
   const usersQuery = useQuery({
     queryKey: ["admin-users"],
     queryFn: getUsers
+  });
+  const reportsQuery = useQuery({
+    queryKey: ["admin-reports"],
+    queryFn: getReports
   });
 
   const stats = getAdminDashboardStats({
@@ -27,17 +32,18 @@ export function AdminDashboardPage() {
         <p className="mt-4 text-stone-700">Review pending listings and keep the trust baseline consistent.</p>
       </section>
 
-      {pendingQuery.isError || usersQuery.isError ? (
+      {pendingQuery.isError || usersQuery.isError || reportsQuery.isError ? (
         <QueryStateNotice
           title="Admin data could not load"
           message={
             (pendingQuery.error as Error | undefined)?.message ||
             (usersQuery.error as Error | undefined)?.message ||
+            (reportsQuery.error as Error | undefined)?.message ||
             "Dashboard moderation stats could not be fetched."
           }
           tone="error"
         />
-      ) : pendingQuery.isLoading || usersQuery.isLoading ? (
+      ) : pendingQuery.isLoading || usersQuery.isLoading || reportsQuery.isLoading ? (
         <QueryStateNotice title="Loading admin overview" message="Fetching pending listings and user moderation stats." />
       ) : (
         <>
@@ -56,7 +62,7 @@ export function AdminDashboardPage() {
             ))}
           </section>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
             <Link to="/admin/pending" className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -76,6 +82,17 @@ export function AdminDashboardPage() {
                 </div>
                 <span className="rounded-full bg-fern/10 px-4 py-2 text-sm font-semibold text-fern">
                   {stats.totalUsers}
+                </span>
+              </div>
+            </Link>
+            <Link to="/admin/reports" className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-ink">Reported listings</h2>
+                  <p className="mt-3 text-sm leading-6 text-stone-700">Review flags from adopters for spam, fraud, or safety concerns.</p>
+                </div>
+                <span className="rounded-full bg-terracotta/10 px-4 py-2 text-sm font-semibold text-terracotta">
+                  {reportsQuery.data?.items.length ?? 0}
                 </span>
               </div>
             </Link>

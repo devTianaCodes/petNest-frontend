@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { PetListing } from "../types/pets";
+import { FavoriteButton } from "./FavoriteButton";
 import { StatusBadge } from "./StatusBadge";
 import { getPetCardMeta } from "./petCardMeta";
 
@@ -9,6 +10,9 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
   return (
     <article className="group overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
       <div className="relative h-56 w-full overflow-hidden bg-stone-100">
+        <div className="absolute right-4 top-4 z-10">
+          <FavoriteButton listingId={pet.id} />
+        </div>
         <img
           src={coverImage}
           alt={pet.name}

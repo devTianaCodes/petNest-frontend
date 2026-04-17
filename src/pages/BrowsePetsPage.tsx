@@ -1,19 +1,26 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { getCategories } from "../api/categories";
 import { getPets } from "../api/pets";
+import { createSavedSearch } from "../api/savedSearches";
 import { PageHeader } from "../components/PageHeader";
 import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
-import { createBrowseSearchParams, getBrowseFilters } from "../features/pets/browseParams";
+import { useAuth } from "../features/auth/AuthContext";
+import { createBrowseSearchParams, getBrowseFilterChips, getBrowseFilters } from "../features/pets/browseParams";
+import { createSavedSearchLabel } from "../features/saved-searches/savedSearchMeta";
 
 const PAGE_SIZE = 12;
 
 export function BrowsePetsPage() {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const { user } = useAuth();
   const filters = getBrowseFilters(searchParams);
-  const { search, category, sex, size, city, state, page } = filters;
+  const { search, category, sex, size, city, state, sort, view, page } = filters;
 
   const params = useMemo(() => {
     const next = createBrowseSearchParams(filters);
@@ -27,13 +34,30 @@ export function BrowsePetsPage() {
   });
 
   const petsQuery = useQuery({
-    queryKey: ["pets", search, category, sex, size, city, state, page],
+    queryKey: ["pets", search, category, sex, size, city, state, sort, page],
     queryFn: () => getPets(params)
   });
 
   const total = petsQuery.data?.pagination?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const hasActiveFilters = Boolean(search || category || sex || size || city || state);
+  const activeChips = getBrowseFilterChips(filters);
+  const saveSearchMutation = useMutation({
+    mutationFn: () =>
+      createSavedSearch({
+        label: createSavedSearchLabel(filters),
+        queryString: createBrowseSearchParams({ ...filters, page: 1 }).toString()
+      }),
+    onSuccess: async () => {
+      setSaveError(null);
+      setSaveMessage("Current filters saved to your dashboard.");
+      await queryClient.invalidateQueries({ queryKey: ["saved-searches"] });
+    },
+    onError: (error) => {
+      setSaveMessage(null);
+      setSaveError((error as Error).message);
+    }
+  });
 
   function updateFilters(nextValues: Partial<ReturnType<typeof getBrowseFilters>>, resetPage = false) {
     setSearchParams(
@@ -46,7 +70,19 @@ export function BrowsePetsPage() {
   }
 
   function clearFilters() {
-    setSearchParams(createBrowseSearchParams({ search: "", category: "", sex: "", size: "", city: "", state: "", page: 1 }));
+    setSearchParams(
+      createBrowseSearchParams({
+        search: "",
+        category: "",
+        sex: "",
+        size: "",
+        city: "",
+        state: "",
+        sort,
+        view,
+        page: 1
+      })
+    );
   }
 
   return (
@@ -110,6 +146,32 @@ export function BrowsePetsPage() {
           onChange={(event) => updateFilters({ state: event.target.value }, true)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
         />
+        <select
+          value={sort}
+          onChange={(event) => updateFilters({ sort: event.target.value as typeof sort }, true)}
+          className="rounded-2xl border border-stone-200 px-4 py-3"
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name-asc">Name A-Z</option>
+        </select>
+        <div className="flex items-center gap-2 rounded-2xl border border-stone-200 p-2">
+          {[
+            ["grid", "Grid"],
+            ["list", "List"]
+          ].map(([nextView, label]) => (
+            <button
+              key={nextView}
+              type="button"
+              onClick={() => updateFilters({ view: nextView as typeof view })}
+              className={`rounded-full px-4 py-2 text-sm font-medium ${
+                view === nextView ? "bg-ink text-white" : "text-ink"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] bg-white p-5 shadow-sm ring-1 ring-black/5">
@@ -117,6 +179,20 @@ export function BrowsePetsPage() {
           {total} animals found{hasActiveFilters ? " for the current filters" : ""}.
         </p>
         <div className="flex flex-wrap items-center gap-3">
+          {user ? (
+            <button
+              type="button"
+              onClick={() => {
+                setSaveMessage(null);
+                setSaveError(null);
+                saveSearchMutation.mutate();
+              }}
+              disabled={saveSearchMutation.isPending}
+              className="rounded-full bg-fern px-5 py-3 text-sm font-medium text-white disabled:opacity-40"
+            >
+              {saveSearchMutation.isPending ? "Saving..." : "Save this search"}
+            </button>
+          ) : null}
           {hasActiveFilters ? (
             <button
               type="button"
@@ -132,7 +208,25 @@ export function BrowsePetsPage() {
         </div>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {saveMessage ? <p className="text-sm text-emerald-700">{saveMessage}</p> : null}
+      {saveError ? <p className="text-sm text-rose-700">{saveError}</p> : null}
+
+      {activeChips.length ? (
+        <section className="flex flex-wrap gap-3">
+          {activeChips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              onClick={() => updateFilters({ [chip.key]: "" }, true)}
+              className="rounded-full bg-fern/10 px-4 py-2 text-sm font-medium text-fern"
+            >
+              {chip.label} ×
+            </button>
+          ))}
+        </section>
+      ) : null}
+
+      <section className={view === "list" ? "grid gap-6" : "grid gap-6 md:grid-cols-2 xl:grid-cols-3"}>
         {categoriesQuery.isError ? (
           <QueryStateNotice
             title="Categories could not load"

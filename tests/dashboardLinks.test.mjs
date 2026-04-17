@@ -21,3 +21,14 @@ test("dashboard links include moderation queue for admins", () => {
 
   assert.ok(links.find((link) => link.to === "/admin/pending"));
 });
+
+test("dashboard links include listing analytics", () => {
+  const links = getDashboardLinks({
+    role: "USER",
+    isEmailVerified: true
+  });
+
+  const analytics = links.find((link) => link.to === "/dashboard/analytics");
+  assert.ok(analytics);
+  assert.match(analytics.description, /saves, requests, and placements/i);
+});
