@@ -1,38 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { getCategories } from "../api/categories";
 import { getPets } from "../api/pets";
 import { PageHeader } from "../components/PageHeader";
 import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
+import { createBrowseSearchParams, getBrowseFilters } from "../features/pets/browseParams";
 
 const PAGE_SIZE = 12;
 
 export function BrowsePetsPage() {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [sex, setSex] = useState("");
-  const [size, setSize] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    setPage(1);
-  }, [search, category, sex, size, city, state]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filters = getBrowseFilters(searchParams);
+  const { search, category, sex, size, city, state, page } = filters;
 
   const params = useMemo(() => {
-    const next = new URLSearchParams();
-    if (search) next.set("search", search);
-    if (category) next.set("category", category);
-    if (sex) next.set("sex", sex);
-    if (size) next.set("size", size);
-    if (city) next.set("city", city);
-    if (state) next.set("state", state);
-    next.set("page", String(page));
+    const next = createBrowseSearchParams(filters);
     next.set("limit", String(PAGE_SIZE));
     return next;
-  }, [search, category, sex, size, city, state, page]);
+  }, [filters]);
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
@@ -48,14 +35,18 @@ export function BrowsePetsPage() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const hasActiveFilters = Boolean(search || category || sex || size || city || state);
 
+  function updateFilters(nextValues: Partial<ReturnType<typeof getBrowseFilters>>, resetPage = false) {
+    setSearchParams(
+      createBrowseSearchParams({
+        ...filters,
+        ...nextValues,
+        page: resetPage ? 1 : nextValues.page ?? filters.page
+      })
+    );
+  }
+
   function clearFilters() {
-    setSearch("");
-    setCategory("");
-    setSex("");
-    setSize("");
-    setCity("");
-    setState("");
-    setPage(1);
+    setSearchParams(createBrowseSearchParams({ search: "", category: "", sex: "", size: "", city: "", state: "", page: 1 }));
   }
 
   return (
@@ -70,12 +61,12 @@ export function BrowsePetsPage() {
         <input
           placeholder="Search by name, breed, or description"
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) => updateFilters({ search: event.target.value }, true)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
         />
         <select
           value={category}
-          onChange={(event) => setCategory(event.target.value)}
+          onChange={(event) => updateFilters({ category: event.target.value }, true)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
           disabled={categoriesQuery.isLoading || categoriesQuery.isError}
         >
@@ -88,7 +79,7 @@ export function BrowsePetsPage() {
         </select>
         <select
           value={sex}
-          onChange={(event) => setSex(event.target.value)}
+          onChange={(event) => updateFilters({ sex: event.target.value }, true)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
         >
           <option value="">Any sex</option>
@@ -98,7 +89,7 @@ export function BrowsePetsPage() {
         </select>
         <select
           value={size}
-          onChange={(event) => setSize(event.target.value)}
+          onChange={(event) => updateFilters({ size: event.target.value }, true)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
         >
           <option value="">Any size</option>
@@ -110,13 +101,13 @@ export function BrowsePetsPage() {
         <input
           placeholder="City"
           value={city}
-          onChange={(event) => setCity(event.target.value)}
+          onChange={(event) => updateFilters({ city: event.target.value }, true)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
         />
         <input
           placeholder="State"
           value={state}
-          onChange={(event) => setState(event.target.value)}
+          onChange={(event) => updateFilters({ state: event.target.value }, true)}
           className="rounded-2xl border border-stone-200 px-4 py-3"
         />
       </section>
@@ -177,7 +168,7 @@ export function BrowsePetsPage() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              onClick={() => updateFilters({ page: Math.max(1, page - 1) })}
               disabled={page === 1}
               className="rounded-full border border-stone-200 px-5 py-3 text-sm font-medium text-ink disabled:opacity-40"
             >
@@ -185,7 +176,7 @@ export function BrowsePetsPage() {
             </button>
             <button
               type="button"
-              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              onClick={() => updateFilters({ page: Math.min(totalPages, page + 1) })}
               disabled={page >= totalPages}
               className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white disabled:opacity-40"
             >
