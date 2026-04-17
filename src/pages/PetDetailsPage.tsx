@@ -250,6 +250,14 @@ export function PetDetailsPage() {
           <p className="mt-2 text-sm leading-6 text-stone-700">
             Contact details stay private. Submit a thoughtful message and the listing owner can review it inside PetNest.
           </p>
+          <div className="mt-4 rounded-3xl bg-sand/50 p-4 text-sm leading-6 text-stone-700">
+            <p className="font-medium text-ink">What happens next</p>
+            <ol className="mt-2 space-y-1">
+              <li>1. Send one clear request with enough detail for a quick first review.</li>
+              <li>2. The rescuer checks it privately and can contact you inside their dashboard flow.</li>
+              <li>3. You track the status from your outgoing requests page without public DMs.</li>
+            </ol>
+          </div>
           {user ? (
             <>
               <input

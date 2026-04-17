@@ -60,6 +60,66 @@ export function getAdoptionRequestFormState(input: {
   };
 }
 
+export function getOutgoingRequestProgress(status: AdoptionRequest["status"]) {
+  if (status === "PENDING") {
+    return {
+      title: "Sent and waiting for review",
+      description: "The rescuer can read your request privately and decide whether to contact you.",
+      toneClassName: "bg-sand/60 text-ink"
+    };
+  }
+
+  if (status === "CONTACTED") {
+    return {
+      title: "Rescuer has responded",
+      description: "Keep an eye on your contact details and dashboard for the next decision.",
+      toneClassName: "bg-fern/15 text-fern"
+    };
+  }
+
+  if (status === "APPROVED") {
+    return {
+      title: "Request approved",
+      description: "This adoption request has been approved. Coordinate the next steps with the rescuer.",
+      toneClassName: "bg-emerald-100 text-emerald-800"
+    };
+  }
+
+  if (status === "REJECTED") {
+    return {
+      title: "Request closed",
+      description: "The rescuer declined this request. You can keep browsing for another good match.",
+      toneClassName: "bg-rose-100 text-rose-700"
+    };
+  }
+
+  return {
+    title: "Request withdrawn",
+    description: "You withdrew this request before a final placement decision.",
+    toneClassName: "bg-stone-200 text-stone-700"
+  };
+}
+
+export function getIncomingRequestGuidance(status: AdoptionRequest["status"]) {
+  if (status === "PENDING") {
+    return "New request. Review the message and contact the adopter if the fit looks promising.";
+  }
+
+  if (status === "CONTACTED") {
+    return "Conversation started. Approve or reject once you have enough confidence in the match.";
+  }
+
+  if (status === "APPROVED") {
+    return "Approved request. The adoption can now move toward its final handoff.";
+  }
+
+  if (status === "REJECTED") {
+    return "Closed request. No more action needed unless you want to revisit the listing later.";
+  }
+
+  return "Withdrawn by the adopter. No more action is needed on this request.";
+}
+
 function getClosedListingReason(listingStatus: string) {
   if (listingStatus === "ADOPTED") {
     return "This pet has already been marked as adopted.";

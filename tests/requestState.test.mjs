@@ -5,7 +5,9 @@ import {
   canWithdrawRequest,
   formatRequestBoolean,
   formatRequestStatus,
-  getAdoptionRequestFormState
+  getAdoptionRequestFormState,
+  getIncomingRequestGuidance,
+  getOutgoingRequestProgress
 } from "../dist-tests/src/features/adoption/requestState.js";
 
 test("request formatting helpers cover booleans and statuses", () => {
@@ -86,4 +88,17 @@ test("adoption request form state allows valid authenticated submissions", () =>
 
   assert.equal(result.canSubmit, true);
   assert.equal(result.trimmedMessage.startsWith("I have"), true);
+});
+
+test("outgoing request progress explains each lifecycle state", () => {
+  assert.match(getOutgoingRequestProgress("PENDING").title, /waiting/i);
+  assert.match(getOutgoingRequestProgress("CONTACTED").description, /next decision/i);
+  assert.match(getOutgoingRequestProgress("APPROVED").title, /approved/i);
+  assert.match(getOutgoingRequestProgress("WITHDRAWN").title, /withdrawn/i);
+});
+
+test("incoming request guidance stays lightweight and actionable", () => {
+  assert.match(getIncomingRequestGuidance("PENDING"), /Review the message/i);
+  assert.match(getIncomingRequestGuidance("CONTACTED"), /Approve or reject/i);
+  assert.match(getIncomingRequestGuidance("REJECTED"), /No more action/i);
 });

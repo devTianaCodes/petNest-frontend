@@ -3,7 +3,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getIncomingRequests, updateAdoptionRequestStatus } from "../api/adoption-requests";
 import { QueryStateNotice } from "../components/QueryStateNotice";
-import { canOwnerUpdateRequest, formatRequestBoolean, formatRequestStatus } from "../features/adoption/requestState";
+import {
+  canOwnerUpdateRequest,
+  formatRequestBoolean,
+  formatRequestStatus,
+  getIncomingRequestGuidance
+} from "../features/adoption/requestState";
 import { getRequestCardMeta } from "../features/adoption/requestCardMeta";
 
 export function IncomingRequestsPage() {
@@ -106,6 +111,10 @@ export function IncomingRequestsPage() {
                   <p>Housing: {request.housingType || "Not specified"}</p>
                   <p>Other pets: {formatRequestBoolean(request.hasOtherPets)}</p>
                   <p>Children in home: {formatRequestBoolean(request.hasChildren)}</p>
+                </div>
+                <div className="mt-4 rounded-3xl bg-sand/50 p-4 text-sm leading-6 text-stone-700">
+                  <p className="font-medium text-ink">Next step</p>
+                  <p className="mt-2">{getIncomingRequestGuidance(request.status)}</p>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-stone-700">{request.message}</p>
                 <div className="mt-4 flex flex-wrap gap-3">

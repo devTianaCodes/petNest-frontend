@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getOutgoingRequests, updateAdoptionRequestStatus } from "../api/adoption-requests";
 import { QueryStateNotice } from "../components/QueryStateNotice";
-import { canWithdrawRequest, formatRequestBoolean } from "../features/adoption/requestState";
+import { canWithdrawRequest, formatRequestBoolean, getOutgoingRequestProgress } from "../features/adoption/requestState";
 import { getRequestCardMeta } from "../features/adoption/requestCardMeta";
 
 export function OutgoingRequestsPage() {
@@ -39,6 +39,7 @@ export function OutgoingRequestsPage() {
       ) : requestsQuery.data?.items.length ? (
         requestsQuery.data.items.map((request) => {
           const meta = getRequestCardMeta(request);
+          const progress = getOutgoingRequestProgress(request.status);
           const isWithdrawing = mutation.isPending && mutation.variables === request.id;
 
           return (
@@ -80,6 +81,10 @@ export function OutgoingRequestsPage() {
                   <p>Housing: {request.housingType || "Not specified"}</p>
                   <p>Other pets: {formatRequestBoolean(request.hasOtherPets)}</p>
                   <p>Children in home: {formatRequestBoolean(request.hasChildren)}</p>
+                </div>
+                <div className={`mt-4 rounded-3xl p-4 text-sm leading-6 ${progress.toneClassName}`}>
+                  <p className="font-medium">{progress.title}</p>
+                  <p className="mt-2">{progress.description}</p>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-stone-700">{request.message}</p>
                 <div className="mt-4 flex flex-wrap gap-3">
