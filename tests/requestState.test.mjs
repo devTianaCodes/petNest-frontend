@@ -53,6 +53,28 @@ test("adoption request form state blocks guests, owners, and short messages", ()
   assert.match(shortMessage.disabledReason, /20 characters/);
 });
 
+test("adoption request form state explains closed listing statuses", () => {
+  const adopted = getAdoptionRequestFormState({
+    userId: "user_2",
+    ownerId: "user_1",
+    listingStatus: "ADOPTED",
+    message: "I have a quiet home, prior rescue experience, and room for this pet.",
+    isSubmitting: false
+  });
+  const pendingApproval = getAdoptionRequestFormState({
+    userId: "user_2",
+    ownerId: "user_1",
+    listingStatus: "PENDING_APPROVAL",
+    message: "I have a quiet home, prior rescue experience, and room for this pet.",
+    isSubmitting: false
+  });
+
+  assert.equal(adopted.canSubmit, false);
+  assert.match(adopted.disabledReason, /already been marked as adopted/i);
+  assert.equal(pendingApproval.canSubmit, false);
+  assert.match(pendingApproval.disabledReason, /pending admin approval/i);
+});
+
 test("adoption request form state allows valid authenticated submissions", () => {
   const result = getAdoptionRequestFormState({
     userId: "user_2",

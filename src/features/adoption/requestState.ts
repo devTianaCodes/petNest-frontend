@@ -47,7 +47,7 @@ export function getAdoptionRequestFormState(input: {
   } else if (isOwner) {
     disabledReason = "You cannot submit a request for your own listing.";
   } else if (!isPublished) {
-    disabledReason = "This listing is not currently accepting adoption requests.";
+    disabledReason = getClosedListingReason(input.listingStatus);
   } else if (trimmedMessage.length < 20) {
     disabledReason = "Write at least 20 characters so the owner can review your request.";
   }
@@ -58,4 +58,24 @@ export function getAdoptionRequestFormState(input: {
     canSubmit,
     disabledReason
   };
+}
+
+function getClosedListingReason(listingStatus: string) {
+  if (listingStatus === "ADOPTED") {
+    return "This pet has already been marked as adopted.";
+  }
+
+  if (listingStatus === "PENDING_APPROVAL") {
+    return "This listing is still pending admin approval.";
+  }
+
+  if (listingStatus === "REJECTED") {
+    return "This listing needs owner updates before it can accept requests again.";
+  }
+
+  if (listingStatus === "DRAFT" || listingStatus === "ARCHIVED") {
+    return "This listing is not currently available for adoption requests.";
+  }
+
+  return "This listing is not currently accepting adoption requests.";
 }

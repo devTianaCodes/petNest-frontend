@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { createAdoptionRequest } from "../api/adoption-requests";
 import { getPet } from "../api/pets";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { getAdoptionRequestFormState } from "../features/adoption/requestState";
+import { getProtectedRedirect } from "../features/auth/authRedirect";
 import { useAuth } from "../features/auth/AuthContext";
 
 export function PetDetailsPage() {
   const { id = "" } = useParams();
+  const location = useLocation();
   const { user } = useAuth();
   const [message, setMessage] = useState("");
   const [housingType, setHousingType] = useState("");
@@ -146,7 +148,6 @@ export function PetDetailsPage() {
               >
                 {requestMutation.isPending ? "Sending request..." : "Submit request"}
               </button>
-              {!requestFormState.canSubmit ? <p className="mt-3 text-sm text-stone-600">{requestFormState.disabledReason}</p> : null}
               {requestMutation.isError ? (
                 <p className="mt-3 text-sm text-rose-700">{(requestMutation.error as Error).message}</p>
               ) : null}
@@ -155,8 +156,21 @@ export function PetDetailsPage() {
               ) : null}
             </>
           ) : (
-            <p className="mt-4 text-sm text-stone-700">Log in to submit an adoption request.</p>
+            <div className="mt-4 space-y-3">
+              <p className="text-sm text-stone-700">Log in to submit an adoption request and keep your contact details private.</p>
+              <Link
+                to={getProtectedRedirect(location.pathname, location.search)}
+                className="inline-flex rounded-full bg-fern px-5 py-3 text-sm font-medium text-white"
+              >
+                Log in to apply
+              </Link>
+            </div>
           )}
+          {user && !requestFormState.canSubmit ? (
+            <div className="mt-4 rounded-3xl bg-stone-100 p-4 text-sm text-stone-700">
+              {requestFormState.disabledReason}
+            </div>
+          ) : null}
         </div>
       </aside>
     </div>
