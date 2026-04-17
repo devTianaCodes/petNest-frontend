@@ -31,7 +31,7 @@ export function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-10 border-b border-[#8eaf99] bg-[#cfe0d4]">
+    <header className="sticky top-0 z-30 border-b border-[#8eaf99] bg-[#cfe0d4]">
       <div className="mx-auto max-w-6xl px-6 py-4">
         <div className="grid gap-4 xl:grid-cols-[auto_1fr_auto] xl:items-center">
           <div className="flex flex-wrap items-center gap-2 text-ink">
