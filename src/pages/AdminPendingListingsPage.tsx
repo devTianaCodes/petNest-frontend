@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { approveListing, getPendingListings, rejectListing } from "../api/admin";
 import { QueryStateNotice } from "../components/QueryStateNotice";
+import { getPendingListingMeta } from "../features/admin/pendingListingMeta";
 
 export function AdminPendingListingsPage() {
   const queryClient = useQueryClient();
@@ -49,42 +50,74 @@ export function AdminPendingListingsPage() {
         <QueryStateNotice title="Loading moderation queue" message="Fetching pending pet listings." />
       ) : pendingQuery.data?.items.length ? (
         pendingQuery.data.items.map((listing) => {
+          const meta = getPendingListingMeta(listing);
           const isApproving = approveMutation.isPending && approveMutation.variables === listing.id;
           const isRejecting = rejectMutation.isPending && rejectMutation.variables?.id === listing.id;
 
           return (
             <article key={listing.id} className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-semibold text-ink">{listing.name}</h2>
-                  <p className="mt-1 text-sm text-stone-600">
-                    {listing.owner?.fullName} • {listing.city}, {listing.state}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
-                    disabled={approveMutation.isPending || rejectMutation.isPending}
-                    onClick={() => approveMutation.mutate(listing.id)}
-                  >
-                    {isApproving ? "Approving..." : "Approve"}
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
-                    disabled={approveMutation.isPending || rejectMutation.isPending}
-                    onClick={() => {
-                      setMessage(null);
-                      setSelectedRejectId(listing.id);
-                      setRejectionReason(listing.rejectionReason ?? "");
-                    }}
-                  >
-                    Reject
-                  </button>
+              <div className="flex flex-wrap items-start gap-5">
+                <img
+                  src={meta.coverImage}
+                  alt={listing.name}
+                  className="h-32 w-40 rounded-[24px] object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fern">{listing.category.name}</p>
+                      <h2 className="mt-1 text-2xl font-semibold text-ink">{listing.name}</h2>
+                      <p className="mt-1 text-sm text-stone-600">
+                        {listing.owner?.fullName} • {listing.city}, {listing.state}
+                      </p>
+                      <p className="mt-2 text-sm text-stone-700">{meta.summary}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
+                        disabled={approveMutation.isPending || rejectMutation.isPending}
+                        onClick={() => approveMutation.mutate(listing.id)}
+                      >
+                        {isApproving ? "Approving..." : "Approve"}
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
+                        disabled={approveMutation.isPending || rejectMutation.isPending}
+                        onClick={() => {
+                          setMessage(null);
+                          setSelectedRejectId(listing.id);
+                          setRejectionReason(listing.rejectionReason ?? "");
+                        }}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-2 text-sm text-stone-700 md:grid-cols-2">
+                    <p>Sex: {listing.sex}</p>
+                    <p>Size: {listing.size}</p>
+                    <p>Images: {listing.images.length}</p>
+                    <p>Extra notes: {meta.hasExtraNotes ? `${meta.noteCount} sections` : "None provided"}</p>
+                  </div>
+
+                  <p className="mt-4 text-sm leading-6 text-stone-700">{listing.description}</p>
+                  {listing.rescueStory ? (
+                    <div className="mt-4 rounded-3xl bg-sand/35 p-4">
+                      <h3 className="text-sm font-semibold text-ink">Rescue story</h3>
+                      <p className="mt-2 text-sm leading-6 text-stone-700">{listing.rescueStory}</p>
+                    </div>
+                  ) : null}
+                  {listing.healthNotes ? (
+                    <div className="mt-4 rounded-3xl bg-stone-100 p-4">
+                      <h3 className="text-sm font-semibold text-ink">Health notes</h3>
+                      <p className="mt-2 text-sm leading-6 text-stone-700">{listing.healthNotes}</p>
+                    </div>
+                  ) : null}
                 </div>
               </div>
-              <p className="mt-4 text-sm leading-6 text-stone-700">{listing.description}</p>
               {selectedRejectId === listing.id ? (
                 <div className="mt-4 space-y-3 rounded-3xl bg-sand/35 p-4">
                   <textarea
