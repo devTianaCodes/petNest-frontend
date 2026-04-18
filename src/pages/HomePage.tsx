@@ -5,7 +5,7 @@ import { getHomeStats } from "../api/analytics";
 import { getPets } from "../api/pets";
 import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
-import { getHomeHeroBadges, getHomeStatCards, getHomeValueCards } from "../features/home/homePageMeta";
+import { getHomeStatCards, getHomeValueCards } from "../features/home/homePageMeta";
 
 export function HomePage() {
   const statsQuery = useQuery({
@@ -24,7 +24,6 @@ export function HomePage() {
   });
 
   const statCards = statsQuery.data ? getHomeStatCards(statsQuery.data.stats) : [];
-  const heroBadges = getHomeHeroBadges();
   const valueCards = getHomeValueCards();
 
   return (
@@ -45,30 +44,12 @@ export function HomePage() {
               Start listing
             </Link>
           </div>
-          <div className="flex flex-wrap gap-3">
-            {heroBadges.map((badge) => (
-              <span key={badge} className="rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-ink shadow-sm ring-1 ring-black/5">
-                {badge}
-              </span>
-            ))}
-          </div>
         </div>
         <div className="relative min-h-[320px] overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/hero.png')" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/35 via-transparent to-transparent" />
-          <div className="absolute bottom-5 left-5 right-5 flex flex-wrap gap-3">
-            <div className="rounded-[24px] bg-white/92 px-4 py-3 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fern">Calmer matching</p>
-              <p className="mt-1 text-sm text-stone-700">No random DMs. One clean adoption flow.</p>
-            </div>
-            <div className="rounded-[24px] bg-white/92 px-4 py-3 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-terracotta">Safer context</p>
-              <p className="mt-1 text-sm text-stone-700">Profiles, stories, and status in one place.</p>
-            </div>
-          </div>
         </div>
       </section>
 

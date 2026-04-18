@@ -23,10 +23,6 @@ export function getHomeStatCards(stats: HomeStats) {
   ];
 }
 
-export function getHomeHeroBadges() {
-  return ["Verified rescuers", "Private requests", "Rescue-first flow"];
-}
-
 export function getHomeValueCards() {
   return [
     {

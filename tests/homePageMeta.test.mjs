@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  getHomeHeroBadges,
   getHomeStatCards,
   getHomeValueCards
 } from "../dist-tests/src/features/home/homePageMeta.js";
@@ -32,8 +31,7 @@ test("home stat cards format homepage metrics", () => {
   });
 });
 
-test("home hero badges and value cards stay aligned with the landing page", () => {
-  assert.deepEqual(getHomeHeroBadges(), ["Verified rescuers", "Private requests", "Rescue-first flow"]);
+test("home value cards stay aligned with the landing page", () => {
   assert.equal(getHomeValueCards().length, 3);
   assert.equal(getHomeValueCards()[1].title, "Structured pet profiles");
 });
