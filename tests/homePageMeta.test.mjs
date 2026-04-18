@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  getHomeHeroBadges,
   getHomeStatCards,
-  getQuickCategoryLinks
+  getHomeValueCards
 } from "../dist-tests/src/features/home/homePageMeta.js";
 
 test("home stat cards format homepage metrics", () => {
@@ -31,19 +32,8 @@ test("home stat cards format homepage metrics", () => {
   });
 });
 
-test("quick category links keep the first four category slugs", () => {
-  const links = getQuickCategoryLinks([
-    { id: "1", name: "Dog", slug: "dog" },
-    { id: "2", name: "Cat", slug: "cat" },
-    { id: "3", name: "Rabbit", slug: "rabbit" },
-    { id: "4", name: "Bird", slug: "bird" },
-    { id: "5", name: "Reptile", slug: "reptile" }
-  ]);
-
-  assert.deepEqual(links, [
-    { label: "Dog", to: "/browse?category=dog" },
-    { label: "Cat", to: "/browse?category=cat" },
-    { label: "Rabbit", to: "/browse?category=rabbit" },
-    { label: "Bird", to: "/browse?category=bird" }
-  ]);
+test("home hero badges and value cards stay aligned with the landing page", () => {
+  assert.deepEqual(getHomeHeroBadges(), ["Verified rescuers", "Private requests", "Rescue-first flow"]);
+  assert.equal(getHomeValueCards().length, 3);
+  assert.equal(getHomeValueCards()[1].title, "Structured pet profiles");
 });

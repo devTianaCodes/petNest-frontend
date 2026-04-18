@@ -1,4 +1,3 @@
-import type { Category } from "../../types/pets";
 import type { HomeStats } from "../../types/home";
 
 const showcasedAdoptedCount = 19;
@@ -24,9 +23,26 @@ export function getHomeStatCards(stats: HomeStats) {
   ];
 }
 
-export function getQuickCategoryLinks(categories: Category[]) {
-  return categories.slice(0, 4).map((category) => ({
-    label: category.name,
-    to: `/browse?category=${category.slug}`
-  }));
+export function getHomeHeroBadges() {
+  return ["Verified rescuers", "Private requests", "Rescue-first flow"];
+}
+
+export function getHomeValueCards() {
+  return [
+    {
+      title: "Verified listing owners",
+      description: "Email verification and moderation keep the first version safer than social posting.",
+      toneClassName: "bg-white"
+    },
+    {
+      title: "Structured pet profiles",
+      description: "Age, category, behavior notes, and rescue context make adoption decisions clearer.",
+      toneClassName: "bg-sand/70"
+    },
+    {
+      title: "Private request flow",
+      description: "Adopters apply inside the app instead of exposing contact details publicly.",
+      toneClassName: "bg-fern/10"
+    }
+  ];
 }
