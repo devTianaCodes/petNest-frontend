@@ -7,6 +7,45 @@ import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { getHomeStatCards, getHomeValueCards } from "../features/home/homePageMeta";
 
+const successStories = [
+  {
+    quote: "We found a calmer way to review adopters than social media messages and random DMs.",
+    person: "Maya, foster volunteer",
+    happyLine: "Seeing her finally settled in a gentle forever home made every rescue shift worth it.",
+    imageA: "/success-stories/story1A.png",
+    imageB: "/success-stories/story1B.png",
+    altA: "Maya with a rescued pet",
+    altB: "Maya caring for the same rescue pet"
+  },
+  {
+    quote: "The structured pet profile made it easier to decide if the match was right for our family.",
+    person: "Elena, adopter",
+    happyLine: "Now our mornings are louder, warmer, and a lot happier with our new best friend.",
+    imageA: "/success-stories/story2A.png",
+    imageB: "/success-stories/story2B.png",
+    altA: "Elena with an adopted pet",
+    altB: "Elena at home with the adopted pet"
+  },
+  {
+    quote: "We felt confident from the first message because the whole process stayed calm and clear.",
+    person: "Daniel, adopter",
+    happyLine: "Bringing him home changed the rhythm of our house in the best possible way.",
+    imageA: "/success-stories/story3A.png",
+    imageB: "/success-stories/story3B.png",
+    altA: "Daniel with his adopted pet",
+    altB: "Daniel relaxing at home with the adopted pet"
+  },
+  {
+    quote: "PetNest helped us focus on the pet’s personality instead of sorting through noisy conversations.",
+    person: "Sofia, adopter",
+    happyLine: "Every evening now ends with a wagging tail and the feeling that our home is complete.",
+    imageA: "/success-stories/story4A.png",
+    imageB: "/success-stories/story4B.png",
+    altA: "Sofia with her adopted pet",
+    altB: "Sofia enjoying time at home with the adopted pet"
+  }
+] as const;
+
 export function HomePage() {
   const statsQuery = useQuery({
     queryKey: ["home-stats"],
@@ -124,60 +163,36 @@ export function HomePage() {
         )}
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="space-y-6">
         <div className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-black/5">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">Success stories</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Love, safety, and a place to belong</h2>
-          <div className="mt-6 space-y-4">
-            <article className="group overflow-hidden rounded-[28px] bg-canvas/80">
-              <div className="grid gap-0 lg:grid-cols-[1.5fr_1fr]">
-                <div className="flex min-h-[280px] flex-col justify-center p-6 lg:p-8">
-                  <blockquote>
-                    <p className="text-xl leading-8 text-stone-700">
-                      “We found a calmer way to review adopters than social media messages and random DMs.”
-                    </p>
-                    <footer className="mt-4 text-sm font-medium text-ink">Maya, foster volunteer</footer>
-                  </blockquote>
+          <div className="mt-6 grid gap-4 xl:grid-cols-2">
+            {successStories.map((story) => (
+              <article key={story.person} className="group overflow-hidden rounded-[28px] bg-canvas/80">
+                <div className="grid gap-0 lg:grid-cols-[1.5fr_1fr]">
+                  <div className="flex min-h-[320px] flex-col justify-center p-6 lg:p-8">
+                    <blockquote>
+                      <p className="text-xl leading-8 text-stone-700">“{story.quote}”</p>
+                      <footer className="mt-4 text-sm font-medium text-ink">{story.person}</footer>
+                    </blockquote>
+                    <p className="mt-6 text-sm leading-6 text-stone-700">{story.happyLine}</p>
+                  </div>
+                  <div className="relative min-h-[320px] overflow-hidden">
+                    <img
+                      src={story.imageA}
+                      alt={story.altA}
+                      className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:opacity-0"
+                    />
+                    <img
+                      src={story.imageB}
+                      alt={story.altB}
+                      className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
+                    />
+                  </div>
                 </div>
-                <div className="relative min-h-[280px] overflow-hidden">
-                  <img
-                    src="/success-stories/story1A.png"
-                    alt="Maya with a rescued pet"
-                    className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:opacity-0"
-                  />
-                  <img
-                    src="/success-stories/story1B.png"
-                    alt="Maya caring for the same rescue pet"
-                    className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
-                  />
-                </div>
-              </div>
-            </article>
-
-            <article className="group overflow-hidden rounded-[28px] bg-canvas/80">
-              <div className="grid gap-0 lg:grid-cols-[1.5fr_1fr]">
-                <div className="flex min-h-[280px] flex-col justify-center p-6 lg:p-8">
-                  <blockquote>
-                    <p className="text-xl leading-8 text-stone-700">
-                      “The structured pet profile made it easier to decide if the match was right for our family.”
-                    </p>
-                    <footer className="mt-4 text-sm font-medium text-ink">Elena, adopter</footer>
-                  </blockquote>
-                </div>
-                <div className="relative min-h-[280px] overflow-hidden">
-                  <img
-                    src="/success-stories/story2A.png"
-                    alt="Elena with an adopted pet"
-                    className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:opacity-0"
-                  />
-                  <img
-                    src="/success-stories/story2B.png"
-                    alt="Elena at home with the adopted pet"
-                    className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
-                  />
-                </div>
-              </div>
-            </article>
+              </article>
+            ))}
           </div>
         </div>
 
