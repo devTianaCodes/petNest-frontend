@@ -14,7 +14,6 @@ const successStories: Array<{
   imageB: string;
   altA: string;
   altB: string;
-  imageClassName?: string;
 }> = [
   {
     quote: "Adopting her filled our home with joy, and watching her relax with our family feels like the happiest ending we could have hoped for.",
@@ -30,8 +29,7 @@ const successStories: Array<{
     imageA: "/success-stories/story2A.png",
     imageB: "/success-stories/story2B.png",
     altA: "Elena with an adopted pet",
-    altB: "Elena at home with the adopted pet",
-    imageClassName: "scale-[1.18] object-center"
+    altB: "Elena at home with the adopted pet"
   },
   {
     quote: "The day we adopted him, our family felt complete, and now every room in the house feels warmer with him in it.",
@@ -39,8 +37,7 @@ const successStories: Array<{
     imageA: "/success-stories/story3A.png",
     imageB: "/success-stories/story3B.png",
     altA: "Roberta with her adopted pet",
-    altB: "Roberta relaxing at home with the adopted pet",
-    imageClassName: "scale-[1.18] object-center"
+    altB: "Roberta relaxing at home with the adopted pet"
   },
   {
     quote: "Adopting her brought so much happiness into our family, and seeing her safe, playful, and loved every day is everything we wanted.",
@@ -175,24 +172,24 @@ export function HomePage() {
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Love, safety, and a place to belong</h2>
           <div className="mt-6 grid gap-4 xl:grid-cols-2">
             {successStories.map((story) => (
-              <article key={story.person} className="group overflow-hidden rounded-[28px] bg-canvas/80">
-                <div className="lg:flex lg:min-h-[320px] lg:items-stretch">
-                  <div className="flex min-h-[320px] flex-col justify-center p-6 lg:min-h-0 lg:basis-3/5 lg:p-8">
+              <article key={story.person} className="group overflow-hidden rounded-[28px] bg-canvas/80 lg:h-[320px]">
+                <div className="lg:flex lg:h-full lg:items-stretch">
+                  <div className="flex min-h-[320px] flex-col justify-center p-6 lg:h-full lg:min-h-0 lg:basis-3/5 lg:p-8">
                     <blockquote>
                       <p className="text-lg leading-7 text-stone-700">“{story.quote}”</p>
                       <footer className="mt-4 text-sm font-medium text-ink">{story.person}</footer>
                     </blockquote>
                   </div>
-                  <div className="relative min-h-[320px] overflow-hidden lg:min-h-0 lg:basis-2/5">
+                  <div className="relative min-h-[320px] overflow-hidden leading-none lg:h-full lg:min-h-0 lg:basis-2/5">
                     <img
                       src={story.imageA}
                       alt={story.altA}
-                      className={`absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:opacity-0 ${story.imageClassName ?? ""}`}
+                      className="absolute inset-0 block h-full w-full object-cover transition duration-500 group-hover:opacity-0"
                     />
                     <img
                       src={story.imageB}
                       alt={story.altB}
-                      className={`absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100 ${story.imageClassName ?? ""}`}
+                      className="absolute inset-0 block h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
                     />
                   </div>
                 </div>
