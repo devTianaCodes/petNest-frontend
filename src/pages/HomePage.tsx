@@ -31,7 +31,7 @@ const successStories: Array<{
     imageB: "/success-stories/story2B.png",
     altA: "Elena with an adopted pet",
     altB: "Elena at home with the adopted pet",
-    imageClassName: "scale-[1.22] object-top"
+    imageClassName: "scale-[1.18] object-center"
   },
   {
     quote: "The day we adopted him, our family felt complete, and now every room in the house feels warmer with him in it.",
@@ -40,7 +40,7 @@ const successStories: Array<{
     imageB: "/success-stories/story3B.png",
     altA: "Roberta with her adopted pet",
     altB: "Roberta relaxing at home with the adopted pet",
-    imageClassName: "scale-[1.22] object-top"
+    imageClassName: "scale-[1.18] object-center"
   },
   {
     quote: "Adopting her brought so much happiness into our family, and seeing her safe, playful, and loved every day is everything we wanted.",
@@ -176,14 +176,14 @@ export function HomePage() {
           <div className="mt-6 grid gap-4 xl:grid-cols-2">
             {successStories.map((story) => (
               <article key={story.person} className="group overflow-hidden rounded-[28px] bg-canvas/80">
-                <div className="grid gap-0 lg:grid-cols-[1.5fr_1fr]">
-                  <div className="flex min-h-[320px] flex-col justify-center p-6 lg:p-8">
+                <div className="lg:flex lg:min-h-[320px] lg:items-stretch">
+                  <div className="flex min-h-[320px] flex-col justify-center p-6 lg:min-h-0 lg:basis-3/5 lg:p-8">
                     <blockquote>
                       <p className="text-lg leading-7 text-stone-700">“{story.quote}”</p>
                       <footer className="mt-4 text-sm font-medium text-ink">{story.person}</footer>
                     </blockquote>
                   </div>
-                  <div className="relative min-h-[320px] overflow-hidden">
+                  <div className="relative min-h-[320px] overflow-hidden lg:min-h-0 lg:basis-2/5">
                     <img
                       src={story.imageA}
                       alt={story.altA}
