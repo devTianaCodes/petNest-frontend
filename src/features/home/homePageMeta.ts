@@ -28,12 +28,12 @@ export function getHomeValueCards() {
     {
       title: "Verified listing owners",
       description: "Email verification and moderation keep the first version safer than social posting.",
-      toneClassName: "bg-white"
+      toneClassName: "bg-fern/10"
     },
     {
       title: "Structured pet profiles",
       description: "Age, category, behavior notes, and rescue context make adoption decisions clearer.",
-      toneClassName: "bg-sand/70"
+      toneClassName: "bg-fern/10"
     },
     {
       title: "Private request flow",

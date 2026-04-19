@@ -70,7 +70,7 @@ export function ListingAnalyticsPage() {
                         </div>
                         <div className="flex items-center gap-3 text-sm">
                           <span className="rounded-full bg-fern/10 px-3 py-1 font-medium text-fern">{summary.statusLabel}</span>
-                          <Link to={`/pets/${listing.id}`} className="rounded-full border border-ink/10 px-4 py-2 font-medium text-ink">
+                          <Link to={`/pets/${listing.id}`} className="rounded-full bg-fern px-5 py-2 font-medium text-white">
                             View listing
                           </Link>
                         </div>

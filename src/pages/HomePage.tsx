@@ -67,10 +67,11 @@ export function HomePage() {
 
   const statCards = statsQuery.data ? getHomeStatCards(statsQuery.data.stats) : [];
   const valueCards = getHomeValueCards();
+  const statCardToneClasses = ["bg-white", "bg-fern/10", "bg-terracotta/10"];
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-8 rounded-[36px] bg-gradient-to-br from-sand to-white p-10 shadow-sm ring-1 ring-black/5 md:grid-cols-[1.1fr_0.9fr] md:p-14">
+      <section className="grid gap-8 rounded-[36px] bg-white p-10 shadow-sm ring-1 ring-black/5 md:grid-cols-[1.1fr_0.9fr] md:p-14">
         <div className="space-y-6">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">Rescue-first adoption platform</p>
           <h1 className="max-w-xl text-5xl font-semibold tracking-tight text-ink">Fall in love, adopt a pet</h1>
@@ -105,8 +106,11 @@ export function HomePage() {
         <QueryStateNotice title="Loading stats" message="Preparing the latest PetNest adoption totals." />
       ) : (
         <section className="grid gap-4 md:grid-cols-3">
-          {statCards.map((card) => (
-            <article key={card.label} className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          {statCards.map((card, index) => (
+            <article
+              key={card.label}
+              className={`rounded-[28px] p-6 shadow-sm ring-1 ring-black/5 ${statCardToneClasses[index % statCardToneClasses.length]}`}
+            >
               <p className="text-sm font-medium text-stone-500">{card.label}</p>
               <p className="mt-3 text-4xl font-semibold tracking-tight text-ink">{card.value}</p>
               <p className="mt-2 text-sm leading-6 text-stone-700">{card.caption}</p>
@@ -115,7 +119,7 @@ export function HomePage() {
         </section>
       )}
 
-      <section className="space-y-4">
+      <section className="space-y-4 rounded-[32px] bg-sand/60 p-8 shadow-sm ring-1 ring-black/5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-terracotta">Why PetNest feels calmer</p>
           <h2 className="mt-2 text-4xl font-semibold tracking-tight text-ink">A safer rhythm for rescued pets and the people helping them</h2>
@@ -130,7 +134,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="space-y-6 rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-black/5">
+      <section className="space-y-6 rounded-[32px] bg-fern/10 p-8 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-terracotta">Featured animals</p>
@@ -167,7 +171,7 @@ export function HomePage() {
       </section>
 
       <section className="space-y-6">
-        <div className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-black/5">
+        <div className="rounded-[32px] bg-terracotta/10 p-8 shadow-sm ring-1 ring-black/5">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">Success stories</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Love, safety, and a place to belong</h2>
           <div className="mt-6 grid gap-4 xl:grid-cols-2">
