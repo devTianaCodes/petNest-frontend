@@ -174,11 +174,11 @@ export function HomePage() {
             {successStories.map((story) => (
               <article key={story.person} className="group overflow-hidden rounded-[28px] bg-canvas/80 lg:h-[320px]">
                 <div className="lg:flex lg:h-full lg:items-stretch">
-                  <div className="flex min-h-[320px] flex-col justify-center p-6 lg:h-full lg:min-h-0 lg:basis-3/5 lg:p-8">
+                  <div className="relative flex min-h-[320px] flex-col p-6 pb-[72px] lg:h-full lg:min-h-0 lg:basis-3/5 lg:px-8 lg:pt-8 lg:pb-[72px]">
                     <blockquote>
-                      <p className="text-lg leading-7 text-stone-700">“{story.quote}”</p>
-                      <footer className="mt-4 text-sm font-medium text-ink">{story.person}</footer>
+                      <p className="text-sm leading-[1.6] text-stone-700 lg:text-sm lg:leading-[1.6]">“{story.quote}”</p>
                     </blockquote>
+                    <footer className="absolute bottom-[15px] left-6 text-sm font-medium text-ink lg:left-8">{story.person}</footer>
                   </div>
                   <div className="relative min-h-[320px] overflow-hidden leading-none lg:h-full lg:min-h-0 lg:basis-2/5">
                     <img
