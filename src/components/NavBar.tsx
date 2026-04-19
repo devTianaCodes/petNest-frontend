@@ -53,7 +53,7 @@ export function NavBar() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-[#8eaf99] bg-[#cfe0d4]">
-      <div className="mx-auto max-w-6xl px-3 py-1.5 sm:px-3.5 md:px-4.5 md:py-2 lg:px-5.5">
+      <div className="mx-auto max-w-6xl px-5 py-1.5 md:py-2">
         <div className="hidden xl:grid xl:grid-cols-[1fr_auto_1fr] xl:items-center xl:gap-4">
           <div className="flex min-w-0 flex-wrap items-center gap-1 text-ink xl:justify-self-start">
             <NavLink to="/adopt" className={sharedLinkClass}>

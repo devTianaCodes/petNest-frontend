@@ -198,17 +198,17 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="rounded-[32px] bg-ink p-8 text-white shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">Ready to help?</p>
+        <div className="rounded-[32px] border border-[#8eaf99] bg-[#cfe0d4] p-8 text-ink shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern/90">Ready to help?</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight">Adopt now or post an animal that needs a safer match.</h2>
-          <p className="mt-4 text-sm leading-7 text-white/80">
+          <p className="mt-4 text-sm leading-7 text-ink/75">
             PetNest is built for rescued pets, foster homes, and independent rescuers who need a cleaner process than social-media posting.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/adopt" className="rounded-full bg-white px-5 py-3 text-sm font-medium text-ink">
+            <Link to="/adopt" className="rounded-full bg-fern px-5 py-3 text-sm font-medium text-white">
               Adopt now
             </Link>
-            <Link to="/dashboard/listings/new" className="rounded-full border border-white/20 px-5 py-3 text-sm font-medium text-white">
+            <Link to="/dashboard/listings/new" className="rounded-full bg-white px-5 py-3 text-sm font-medium text-ink shadow-sm">
               Post an animal
             </Link>
           </div>
