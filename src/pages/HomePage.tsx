@@ -7,11 +7,18 @@ import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { getHomeStatCards, getHomeValueCards } from "../features/home/homePageMeta";
 
-const successStories = [
+const successStories: Array<{
+  quote: string;
+  person: string;
+  imageA: string;
+  imageB: string;
+  altA: string;
+  altB: string;
+  imageClassName?: string;
+}> = [
   {
-    quote: "We found a calmer way to review adopters than social media messages and random DMs.",
+    quote: "Adopting her filled our home with joy, and watching her relax with our family feels like the happiest ending we could have hoped for.",
     person: "Maya, foster volunteer",
-    happyLine: "Seeing her finally settled in a gentle forever home made every rescue shift worth it.",
     imageA: "/success-stories/story1A.png",
     imageB: "/success-stories/story1B.png",
     altA: "Maya with a rescued pet",
@@ -20,31 +27,30 @@ const successStories = [
   {
     quote: "The structured pet profile made it easier to decide if the match was right for our family.",
     person: "Elena, adopter",
-    happyLine: "Now our mornings are louder, warmer, and a lot happier with our new best friend.",
     imageA: "/success-stories/story2A.png",
     imageB: "/success-stories/story2B.png",
     altA: "Elena with an adopted pet",
-    altB: "Elena at home with the adopted pet"
+    altB: "Elena at home with the adopted pet",
+    imageClassName: "scale-[1.22] object-top"
   },
   {
-    quote: "We felt confident from the first message because the whole process stayed calm and clear.",
-    person: "Daniel, adopter",
-    happyLine: "Bringing him home changed the rhythm of our house in the best possible way.",
+    quote: "The day we adopted him, our family felt complete, and now every room in the house feels warmer with him in it.",
+    person: "Roberta, adopter",
     imageA: "/success-stories/story3A.png",
     imageB: "/success-stories/story3B.png",
-    altA: "Daniel with his adopted pet",
-    altB: "Daniel relaxing at home with the adopted pet"
+    altA: "Roberta with her adopted pet",
+    altB: "Roberta relaxing at home with the adopted pet",
+    imageClassName: "scale-[1.22] object-top"
   },
   {
-    quote: "PetNest helped us focus on the pet’s personality instead of sorting through noisy conversations.",
-    person: "Sofia, adopter",
-    happyLine: "Every evening now ends with a wagging tail and the feeling that our home is complete.",
+    quote: "Adopting her brought so much happiness into our family, and seeing her safe, playful, and loved every day is everything we wanted.",
+    person: "Mark, adopter",
     imageA: "/success-stories/story4A.png",
     imageB: "/success-stories/story4B.png",
-    altA: "Sofia with her adopted pet",
-    altB: "Sofia enjoying time at home with the adopted pet"
+    altA: "Mark with his adopted pet",
+    altB: "Mark enjoying time at home with the adopted pet"
   }
-] as const;
+];
 
 export function HomePage() {
   const statsQuery = useQuery({
@@ -173,21 +179,20 @@ export function HomePage() {
                 <div className="grid gap-0 lg:grid-cols-[1.5fr_1fr]">
                   <div className="flex min-h-[320px] flex-col justify-center p-6 lg:p-8">
                     <blockquote>
-                      <p className="text-xl leading-8 text-stone-700">“{story.quote}”</p>
+                      <p className="text-lg leading-7 text-stone-700">“{story.quote}”</p>
                       <footer className="mt-4 text-sm font-medium text-ink">{story.person}</footer>
                     </blockquote>
-                    <p className="mt-6 text-sm leading-6 text-stone-700">{story.happyLine}</p>
                   </div>
                   <div className="relative min-h-[320px] overflow-hidden">
                     <img
                       src={story.imageA}
                       alt={story.altA}
-                      className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:opacity-0"
+                      className={`absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:opacity-0 ${story.imageClassName ?? ""}`}
                     />
                     <img
                       src={story.imageB}
                       alt={story.altB}
-                      className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
+                      className={`absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100 ${story.imageClassName ?? ""}`}
                     />
                   </div>
                 </div>
