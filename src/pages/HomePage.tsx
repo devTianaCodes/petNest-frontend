@@ -122,7 +122,7 @@ export function HomePage() {
       <section className="space-y-4 rounded-[32px] bg-sand/60 p-8 shadow-sm ring-1 ring-black/5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-terracotta">Why PetNest feels calmer</p>
-          <h2 className="mt-2 text-4xl font-semibold tracking-tight text-ink">A safer rhythm for rescued pets and the people helping them</h2>
+          <h2 className="mt-2 text-4xl font-semibold tracking-tight text-ink">A safer place for rescued pets and the people helping them</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {valueCards.map((card) => (
@@ -178,11 +178,11 @@ export function HomePage() {
             {successStories.map((story) => (
               <article key={story.person} className="group overflow-hidden rounded-[28px] bg-canvas/80 lg:h-[320px]">
                 <div className="lg:flex lg:h-full lg:items-stretch">
-                  <div className="relative flex min-h-[320px] flex-col p-6 pb-[72px] lg:h-full lg:min-h-0 lg:basis-3/5 lg:px-8 lg:pt-8 lg:pb-[72px]">
+                  <div className="flex min-h-[320px] flex-col p-6 lg:h-full lg:min-h-0 lg:basis-3/5 lg:px-8 lg:pt-8">
                     <blockquote>
-                      <p className="text-sm leading-[1.6] text-stone-700 lg:text-sm lg:leading-[1.6]">“{story.quote}”</p>
+                      <p className="text-[1.125rem] leading-[1.6] text-stone-700 lg:text-[1.125rem] lg:leading-[1.6]">“{story.quote}”</p>
                     </blockquote>
-                    <footer className="absolute bottom-[15px] left-6 text-sm font-medium text-ink lg:left-8">{story.person}</footer>
+                    <footer className="mt-[30px] text-sm font-medium text-ink">{story.person}</footer>
                   </div>
                   <div className="relative min-h-[320px] overflow-hidden leading-none lg:h-full lg:min-h-0 lg:basis-2/5">
                     <img

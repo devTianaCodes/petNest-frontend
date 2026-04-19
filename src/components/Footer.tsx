@@ -51,8 +51,6 @@ type SocialLinkProps = {
 };
 
 function SocialLink({ href, label, Icon }: SocialLinkProps) {
-  const isX = label === "X";
-
   return (
     <a
       href={href}
@@ -61,7 +59,7 @@ function SocialLink({ href, label, Icon }: SocialLinkProps) {
       aria-label={`Open ${label}`}
       className="inline-flex h-10 w-12 items-center justify-center border border-ink/15 text-ink/70 transition hover:border-fern/45 hover:text-fern"
     >
-      <Icon className={isX ? "h-[27px] w-[27px] translate-x-[0.8px]" : "h-[27px] w-[27px]"} />
+      <Icon className="h-[27px] w-[27px]" />
     </a>
   );
 }

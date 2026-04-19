@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
 import { getPostLoginRedirect } from "../features/auth/authRedirect";
@@ -10,6 +10,62 @@ type AuthMode = "login" | "register";
 type AuthPageProps = {
   initialMode?: AuthMode;
 };
+
+type PasswordToggleButtonProps = {
+  visible: boolean;
+  onToggle: () => void;
+};
+
+type DemoLoginPayload = {
+  email: string;
+  password: string;
+  fullName: string;
+  mode: AuthMode;
+  redirect: string | null;
+  autologin: boolean;
+};
+
+function readDemoPayload(): DemoLoginPayload | null {
+  if (typeof window === "undefined" || !window.location.hash.startsWith("#demo=")) {
+    return null;
+  }
+
+  const params = new URLSearchParams(window.location.hash.slice("#demo=".length));
+  return {
+    email: params.get("email") ?? "",
+    password: params.get("password") ?? "",
+    fullName: params.get("fullName") ?? "",
+    mode: params.get("mode") === "register" ? "register" : "login",
+    redirect: params.get("redirect"),
+    autologin: params.get("autologin") === "1"
+  };
+}
+
+function clearDemoHash() {
+  if (typeof window === "undefined" || !window.location.hash.startsWith("#demo=")) {
+    return;
+  }
+
+  window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+}
+
+function PasswordToggleButton({ visible, onToggle }: PasswordToggleButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="absolute inset-y-0 right-4 flex items-center text-stone-500 transition hover:text-fern"
+      aria-label={visible ? "Hide password" : "Show password"}
+      aria-pressed={visible}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
+        <path d="M2 12c2.6-4.1 6-6.1 10-6.1s7.4 2 10 6.1c-2.6 4.1-6 6.1-10 6.1S4.6 16.1 2 12Z" />
+        <circle cx="12" cy="12" r="3.2" />
+        {visible ? null : <path d="M4 4l16 16" />}
+      </svg>
+    </button>
+  );
+}
 
 export function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const navigate = useNavigate();
@@ -26,6 +82,10 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [verificationUrl, setVerificationUrl] = useState<string | undefined>();
   const [isLoginSubmitting, setIsLoginSubmitting] = useState(false);
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
+  const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
+  const [demoLogin, setDemoLogin] = useState<{ email: string; password: string } | null>(null);
+  const [demoRedirect, setDemoRedirect] = useState<string | null>(null);
+  const autoLoginStarted = useRef(false);
 
   const modeParam = searchParams.get("mode");
   const mode: AuthMode = modeParam === "register" ? "register" : initialMode;
@@ -52,20 +112,98 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
   );
 
   function setMode(nextMode: AuthMode) {
-    const nextParams = new URLSearchParams(searchParams);
+    const nextParams =
+      typeof window === "undefined" ? new URLSearchParams(searchParams) : new URLSearchParams(window.location.search);
     nextParams.set("mode", nextMode);
     setSearchParams(nextParams, { replace: true });
     setLoginError(null);
     setRegisterError(null);
   }
 
+  useEffect(() => {
+    function applyDemoPayload() {
+      const payload = readDemoPayload();
+      if (!payload) {
+        return;
+      }
+
+      setDemoRedirect(payload.redirect);
+      setMode(payload.mode);
+
+      if (payload.mode === "register") {
+        setRegisterName(payload.fullName);
+        setRegisterEmail(payload.email);
+        setRegisterPassword(payload.password);
+        setConfirmPassword(payload.password);
+        return;
+      }
+
+      setLoginEmail(payload.email);
+      setLoginPassword(payload.password);
+
+      if (!payload.autologin || !payload.email || !payload.password || autoLoginStarted.current) {
+        return;
+      }
+
+      autoLoginStarted.current = true;
+      clearDemoHash();
+      setDemoLogin({
+        email: payload.email.trim(),
+        password: payload.password
+      });
+    }
+
+    applyDemoPayload();
+    window.addEventListener("hashchange", applyDemoPayload);
+    return () => window.removeEventListener("hashchange", applyDemoPayload);
+  }, []);
+
+  useEffect(() => {
+    if (!demoLogin || isLoginSubmitting) {
+      return;
+    }
+
+    const nextDemoLogin = demoLogin;
+    if (!nextDemoLogin) {
+      return;
+    }
+
+    async function runDemoLogin() {
+      setLoginError(null);
+      setIsLoginSubmitting(true);
+      try {
+        await signIn(nextDemoLogin);
+        navigate(getPostLoginRedirect(demoRedirect ?? redirectTarget), { replace: true });
+      } catch (authError) {
+        setLoginError((authError as Error).message);
+        autoLoginStarted.current = false;
+      } finally {
+        setIsLoginSubmitting(false);
+        setDemoLogin(null);
+      }
+    }
+
+    void runDemoLogin();
+  }, [demoLogin, demoRedirect, isLoginSubmitting, navigate, redirectTarget, signIn]);
+
   async function submitLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError(null);
+
+    if (!loginValidation.hasValidEmail) {
+      setLoginError("Enter a valid email address.");
+      return;
+    }
+
+    if (!loginValidation.hasValidPassword) {
+      setLoginError("Password must be at least 8 characters.");
+      return;
+    }
+
     setIsLoginSubmitting(true);
     try {
       await signIn({ email: loginValidation.trimmedEmail, password: loginPassword });
-      navigate(getPostLoginRedirect(redirectTarget), { replace: true });
+      navigate(getPostLoginRedirect(demoRedirect ?? redirectTarget), { replace: true });
     } catch (authError) {
       setLoginError((authError as Error).message);
     } finally {
@@ -101,19 +239,19 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
 
   return (
     <section className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-      <aside className="rounded-[32px] bg-ink p-8 text-white shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">PetNest account</p>
+      <aside className="rounded-[32px] bg-[#cfe0d4] p-8 text-ink shadow-sm">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern/80">PetNest account</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">
           {mode === "login" ? "Welcome back to PetNest" : "Create one calm place for adoption work"}
         </h1>
-        <p className="mt-4 text-sm leading-7 text-white/80">
+        <p className="mt-4 text-sm leading-7 text-ink/75">
           {mode === "login"
             ? "Log in to manage listings, review adoption requests, and keep rescued pets moving toward a safer home."
             : "Register once, verify your email, and start listing rescued pets or tracking the animals you love."}
         </p>
-        <div className="mt-8 rounded-[28px] bg-white/10 p-6">
-          <p className="text-sm font-semibold text-white">What you can do here</p>
-          <ul className="mt-4 space-y-3 text-sm leading-6 text-white/80">
+        <div className="mt-8 rounded-[28px] bg-canvas p-6">
+          <p className="text-sm font-semibold text-ink">What you can do here</p>
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-ink/75">
             {registerBenefits.map((benefit) => (
               <li key={benefit}>{benefit}</li>
             ))}
@@ -127,7 +265,7 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
             type="button"
             onClick={() => setMode("login")}
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-              mode === "login" ? "bg-white text-ink shadow-sm" : "text-stone-600"
+              mode === "login" ? "bg-[#cfe0d4] text-ink shadow-sm" : "text-stone-600"
             }`}
           >
             Log in
@@ -168,14 +306,20 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
               <label htmlFor="login-password" className="text-sm font-medium text-ink">
                 Password
               </label>
-              <input
-                id="login-password"
-                className="mt-2 w-full rounded-2xl border border-stone-200 px-4 py-3"
-                placeholder="Your password"
-                type="password"
-                value={loginPassword}
-                onChange={(event) => setLoginPassword(event.target.value)}
-              />
+              <div className="relative mt-2">
+                <input
+                  id="login-password"
+                  className="w-full rounded-2xl border border-stone-200 px-4 py-3 pr-12"
+                  placeholder="Your password"
+                  type={isLoginPasswordVisible ? "text" : "password"}
+                  value={loginPassword}
+                  onChange={(event) => setLoginPassword(event.target.value)}
+                />
+                <PasswordToggleButton
+                  visible={isLoginPasswordVisible}
+                  onToggle={() => setIsLoginPasswordVisible((current) => !current)}
+                />
+              </div>
             </div>
             {!loginValidation.hasValidEmail && loginValidation.trimmedEmail.length > 0 ? (
               <p className="text-sm text-rose-700">Enter a valid email address.</p>
@@ -186,10 +330,10 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
             {loginError ? <p className="text-sm text-rose-700">{loginError}</p> : null}
             <button
               type="submit"
-              disabled={!loginValidation.canSubmit}
-              className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-white disabled:opacity-70"
+              disabled={isLoginSubmitting}
+              className="rounded-full bg-fern px-6 py-3 text-sm font-medium text-white disabled:cursor-not-allowed"
             >
-              {isLoginSubmitting ? "Logging in..." : "Log in"}
+              {isLoginSubmitting ? "Logging in..." : "Log into your account"}
             </button>
             <p className="text-sm text-stone-600">
               Need an account?{" "}

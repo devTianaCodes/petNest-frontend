@@ -190,15 +190,15 @@ export function BrowsePetsPage() {
             </div>
           </section>
 
-          <section className="rounded-[28px] bg-ink p-6 text-white shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">View controls</p>
+          <section className="rounded-[28px] border border-[#8eaf99] bg-[#cfe0d4] p-6 text-ink shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern/80">View controls</p>
             <div className="mt-4 space-y-4">
               <label className="block">
-                <span className="text-sm font-medium text-white">Sort</span>
+                <span className="text-sm font-medium text-ink">Sort</span>
                 <select
                   value={sort}
                   onChange={(event) => updateFilters({ sort: event.target.value as typeof sort }, true)}
-                  className="mt-2 w-full rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-white"
+                  className="mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-ink"
                 >
                   <option value="newest" className="text-ink">Newest first</option>
                   <option value="oldest" className="text-ink">Oldest first</option>
@@ -206,8 +206,8 @@ export function BrowsePetsPage() {
                 </select>
               </label>
               <div>
-                <span className="text-sm font-medium text-white">Layout</span>
-                <div className="mt-2 flex items-center gap-2 rounded-2xl bg-white/10 p-2">
+                <span className="text-sm font-medium text-ink">Layout</span>
+                <div className="mt-2 flex items-center gap-2 rounded-2xl bg-white p-2 ring-1 ring-black/5">
                   {[
                     ["grid", "Grid"],
                     ["list", "List"]
@@ -217,7 +217,7 @@ export function BrowsePetsPage() {
                       type="button"
                       onClick={() => updateFilters({ view: nextView as typeof view })}
                       className={`rounded-full px-4 py-2 text-sm font-medium ${
-                        view === nextView ? "bg-white text-ink" : "text-white/80"
+                        view === nextView ? "bg-fern text-white" : "text-ink/70"
                       }`}
                     >
                       {label}
