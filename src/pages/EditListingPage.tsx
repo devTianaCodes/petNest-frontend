@@ -7,6 +7,7 @@ import { QueryStateNotice } from "../components/QueryStateNotice";
 import { ListingForm, type ListingFormValues } from "../features/pets/ListingForm";
 import { ImageUploader } from "../features/pets/ImageUploader";
 import { getListingStatusMeta } from "../features/pets/listingStatusMeta";
+import { buildPetDetailsPath } from "../features/pets/petPaths";
 
 export function EditListingPage() {
   const { id = "" } = useParams();
@@ -135,7 +136,7 @@ export function EditListingPage() {
           <button
             type="button"
             className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white"
-            onClick={() => navigate(`/pets/${id}`)}
+            onClick={() => navigate(buildPetDetailsPath({ id, name: listing.name }))}
           >
             Preview listing
           </button>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getListingAnalytics } from "../api/analytics";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { getAnalyticsCards, getTopListingSummary } from "../features/analytics/listingAnalyticsMeta";
+import { buildPetDetailsPath } from "../features/pets/petPaths";
 
 export function ListingAnalyticsPage() {
   const analyticsQuery = useQuery({
@@ -70,7 +71,7 @@ export function ListingAnalyticsPage() {
                         </div>
                         <div className="flex items-center gap-3 text-sm">
                           <span className="rounded-full bg-fern/10 px-3 py-1 font-medium text-fern">{summary.statusLabel}</span>
-                          <Link to={`/pets/${listing.id}`} className="rounded-full bg-fern px-5 py-2 font-medium text-white">
+                          <Link to={buildPetDetailsPath(listing)} className="rounded-full bg-fern px-5 py-2 font-medium text-white">
                             View listing
                           </Link>
                         </div>

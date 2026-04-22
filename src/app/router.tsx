@@ -31,10 +31,11 @@ export const router = createBrowserRouter([
     element: <App />,
     errorElement: <NotFoundPage />,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <Navigate to="/home" replace /> },
+      { path: "home", element: <HomePage /> },
       { path: "adopt", element: <AdoptPage /> },
       { path: "browse", element: <BrowsePetsPage /> },
-      { path: "pets/:id", element: <PetDetailsPage /> },
+      { path: "pets/:id/:petSlug?", element: <PetDetailsPage /> },
       { path: "auth", element: <AuthPage /> },
       { path: "login", element: <Navigate to="/auth" replace /> },
       { path: "register", element: <Navigate to="/auth?mode=register" replace /> },

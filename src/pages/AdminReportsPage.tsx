@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getReports, updateReportStatus } from "../api/reports";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { getReportMeta } from "../features/admin/reportMeta";
+import { buildPetDetailsPath } from "../features/pets/petPaths";
 
 export function AdminReportsPage() {
   const queryClient = useQueryClient();
@@ -76,7 +77,7 @@ export function AdminReportsPage() {
                   {report.details ? <p className="text-sm leading-6 text-stone-700">{report.details}</p> : null}
 
                   <div className="flex flex-wrap gap-3">
-                    <Link to={`/pets/${report.listing.id}`} className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink">
+                    <Link to={buildPetDetailsPath(report.listing)} className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink">
                       Open listing
                     </Link>
                     <a href={`mailto:${report.reporter.email}`} className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink">

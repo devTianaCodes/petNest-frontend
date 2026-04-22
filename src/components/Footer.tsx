@@ -70,7 +70,7 @@ export function Footer() {
       <div className="grid gap-8 md:grid-cols-2 xl:flex xl:items-start xl:justify-between xl:gap-8">
         <section className="space-y-4 md:col-span-2 xl:w-[40%] xl:max-w-[460px]">
           <div className="space-y-2">
-            <Link to="/" className="inline-flex items-center gap-3">
+            <Link to="/home" className="inline-flex items-center gap-3">
               <img src="/logo.png" alt="PetNest logo" className="h-11 w-auto object-contain" />
               <span className="text-2xl font-semibold tracking-tight text-ink">PetNest</span>
             </Link>

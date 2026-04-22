@@ -5,6 +5,7 @@ import { getOutgoingRequests, updateAdoptionRequestStatus } from "../api/adoptio
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { canWithdrawRequest, formatRequestBoolean, getOutgoingRequestProgress } from "../features/adoption/requestState";
 import { getRequestCardMeta } from "../features/adoption/requestCardMeta";
+import { buildPetDetailsPath } from "../features/pets/petPaths";
 
 export function OutgoingRequestsPage() {
   const queryClient = useQueryClient();
@@ -88,7 +89,7 @@ export function OutgoingRequestsPage() {
                 </div>
                 <p className="mt-4 text-sm leading-6 text-stone-700">{request.message}</p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Link to={`/pets/${request.listing.id}`} className="rounded-full border border-stone-200 px-4 py-2 text-sm font-medium text-ink">
+                  <Link to={buildPetDetailsPath(request.listing)} className="rounded-full border border-stone-200 px-4 py-2 text-sm font-medium text-ink">
                     Open listing
                   </Link>
                   {!canWithdrawRequest(request.status) ? (

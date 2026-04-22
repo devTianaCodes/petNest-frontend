@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { PetListing } from "../types/pets";
+import { buildPetDetailsPath } from "../features/pets/petPaths";
 import { FavoriteButton } from "./FavoriteButton";
 import { StatusBadge } from "./StatusBadge";
 import { getPetCardMeta } from "./petCardMeta";
@@ -42,7 +43,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
         <p className="mt-4 line-clamp-3 text-sm leading-6 text-stone-700">{pet.description}</p>
         <div className="mt-auto flex items-center justify-between gap-4 pt-4">
           <p className="text-sm text-stone-500">{detailLabel}</p>
-          <Link to={`/pets/${pet.id}`} className="rounded-full bg-fern px-5 py-2 text-sm font-medium text-white">
+          <Link to={buildPetDetailsPath(pet)} className="rounded-full bg-fern px-5 py-2 text-sm font-medium text-white">
             View
           </Link>
         </div>

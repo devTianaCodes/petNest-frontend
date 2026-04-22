@@ -68,7 +68,7 @@ export function NavBar() {
           </div>
 
           <div className="flex items-center justify-center xl:justify-self-center">
-            <Link to="/" className="flex items-center gap-2.5">
+            <Link to="/home" className="flex items-center gap-2.5">
               <img src="/logo.png" alt="PetNest logo" className="h-9 w-auto object-contain 2xl:h-11" />
               <span className="text-[1.2rem] font-semibold tracking-tight text-ink 2xl:text-[1.35rem]">PetNest</span>
             </Link>
@@ -136,7 +136,7 @@ export function NavBar() {
               </svg>
             </button>
 
-            <Link to="/" className="flex items-center gap-2 sm:gap-2.5">
+            <Link to="/home" className="flex items-center gap-2 sm:gap-2.5">
               <img src="/logo.png" alt="PetNest logo" className="h-8 w-auto object-contain sm:h-9 md:h-10" />
               <span className="text-[1.05rem] font-semibold tracking-tight text-ink sm:text-[1.15rem] md:text-[1.2rem]">PetNest</span>
             </Link>
