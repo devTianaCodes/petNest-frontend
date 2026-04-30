@@ -22,6 +22,9 @@ export function getPetShareLinks(pathname: string, title: string) {
   return {
     copyUrl: href,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    instagram: `https://instagram.com`,
+    x: `https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+    youtube: `https://youtube.com`,
     email: `mailto:?subject=${encodedTitle}&body=${encodedUrl}`
   };
 }

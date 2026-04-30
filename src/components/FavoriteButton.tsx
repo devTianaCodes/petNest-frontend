@@ -5,6 +5,13 @@ import { getFavoriteIds } from "../features/favorites/favoritesState";
 import { getProtectedRedirect } from "../features/auth/authRedirect";
 import { useAuth } from "../features/auth/AuthContext";
 
+const favoriteIdsQueryKey = ["favorites", "ids"] as const;
+
+async function getFavoriteIdList() {
+  const response = await getFavorites();
+  return Array.from(getFavoriteIds(response.items));
+}
+
 export function FavoriteButton({
   listingId,
   className = ""
@@ -15,13 +22,14 @@ export function FavoriteButton({
   const location = useLocation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const favoritesQuery = useQuery({
-    queryKey: ["favorites"],
-    queryFn: getFavorites,
-    enabled: Boolean(user)
+  const favoriteIdsQuery = useQuery({
+    queryKey: favoriteIdsQueryKey,
+    queryFn: getFavoriteIdList,
+    enabled: Boolean(user),
+    staleTime: 30_000
   });
 
-  const favoriteIds = getFavoriteIds(favoritesQuery.data?.items ?? []);
+  const favoriteIds = new Set(favoriteIdsQuery.data ?? []);
   const isFavorite = favoriteIds.has(listingId);
 
   const mutation = useMutation({
@@ -33,7 +41,25 @@ export function FavoriteButton({
 
       await addFavorite(listingId);
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: favoriteIdsQueryKey });
+      const previousFavoriteIds = queryClient.getQueryData<string[]>(favoriteIdsQueryKey);
+      const nextFavoriteIds = new Set(previousFavoriteIds ?? Array.from(favoriteIds));
+
+      if (isFavorite) {
+        nextFavoriteIds.delete(listingId);
+      } else {
+        nextFavoriteIds.add(listingId);
+      }
+
+      queryClient.setQueryData(favoriteIdsQueryKey, Array.from(nextFavoriteIds));
+      return { previousFavoriteIds };
+    },
+    onError: (_error, _variables, context) => {
+      queryClient.setQueryData(favoriteIdsQueryKey, context?.previousFavoriteIds ?? Array.from(favoriteIds));
+    },
     onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: favoriteIdsQueryKey });
       await queryClient.invalidateQueries({ queryKey: ["favorites"] });
     }
   });
@@ -58,7 +84,7 @@ export function FavoriteButton({
     <button
       type="button"
       className={buttonClassName}
-      disabled={mutation.isPending || favoritesQuery.isLoading}
+      disabled={mutation.isPending || favoriteIdsQuery.isLoading}
       onClick={() => mutation.mutate()}
       aria-label={label}
       title={label}

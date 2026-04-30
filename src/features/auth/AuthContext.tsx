@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { login, logout, refreshSession, register } from "../../api/auth";
 import { setAccessToken } from "../../api/client";
 import type { AuthUser } from "../../types/auth";
@@ -19,10 +19,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [accessToken, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const authMutationVersion = useRef(0);
 
   useEffect(() => {
+    const refreshVersion = authMutationVersion.current;
+
     refresh()
       .catch(() => {
+        if (authMutationVersion.current !== refreshVersion) {
+          return;
+        }
+
         setUser(null);
         setToken(null);
         setAccessToken(null);
@@ -31,6 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function signIn(payload: { email: string; password: string }) {
+    authMutationVersion.current += 1;
     const response = await login(payload);
     setUser(response.user);
     setToken(response.accessToken);
@@ -42,6 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signOut() {
+    authMutationVersion.current += 1;
     await logout();
     setUser(null);
     setToken(null);

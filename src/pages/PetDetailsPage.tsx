@@ -3,14 +3,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { createAdoptionRequest } from "../api/adoption-requests";
 import { getPet } from "../api/pets";
-import { createListingReport } from "../api/reports";
 import { FavoriteButton } from "../components/FavoriteButton";
 import { QueryStateNotice } from "../components/QueryStateNotice";
+import { SocialIconLink, footerSocialLinks } from "../components/SocialLinks";
 import { getAdoptionRequestFormState } from "../features/adoption/requestState";
 import { getProtectedRedirect } from "../features/auth/authRedirect";
 import { useAuth } from "../features/auth/AuthContext";
 import { getPetGalleryImages, getPetShareLinks } from "../features/pets/petDetailsMeta";
-import { canSubmitListingReport } from "../features/reports/reportForm";
 
 export function PetDetailsPage() {
   const { id = "" } = useParams();
@@ -23,8 +22,6 @@ export function PetDetailsPage() {
   const [hasOtherPets, setHasOtherPets] = useState(false);
   const [hasChildren, setHasChildren] = useState(false);
   const [shareMessage, setShareMessage] = useState<string | null>(null);
-  const [reportReason, setReportReason] = useState("");
-  const [reportDetails, setReportDetails] = useState("");
   const queryClient = useQueryClient();
   const petQuery = useQuery({
     queryKey: ["pet", id],
@@ -48,18 +45,6 @@ export function PetDetailsPage() {
       await queryClient.invalidateQueries({ queryKey: ["outgoing-requests"] });
     }
   });
-  const reportMutation = useMutation({
-    mutationFn: () =>
-      createListingReport(id, {
-        reason: reportReason.trim(),
-        details: reportDetails.trim()
-      }),
-    onSuccess: () => {
-      setReportReason("");
-      setReportDetails("");
-    }
-  });
-
   const pet = petQuery.data?.listing;
   const breedLabel = [pet?.breedPrimary, pet?.breedSecondary].filter(Boolean).join(" / ");
   const galleryImages = getPetGalleryImages({
@@ -68,6 +53,10 @@ export function PetDetailsPage() {
   });
   const selectedImage = galleryImages[selectedImageIndex] ?? galleryImages[0];
   const shareLinks = getPetShareLinks(location.pathname, pet?.name ?? "PetNest listing");
+  const listingSocialLinks = footerSocialLinks.map((link) => ({
+    ...link,
+    href: shareLinks[link.label.toLowerCase() as "instagram" | "facebook" | "x" | "youtube"]
+  }));
   const requestFormState = getAdoptionRequestFormState({
     userId: user?.id,
     ownerId: pet?.owner?.id,
@@ -75,13 +64,6 @@ export function PetDetailsPage() {
     message,
     isSubmitting: requestMutation.isPending
   });
-  const reportFormState = canSubmitListingReport({
-    reason: reportReason,
-    details: reportDetails,
-    isOwner: user?.id === pet?.owner?.id,
-    isSubmitting: reportMutation.isPending
-  });
-
   if (petQuery.isError) {
     return (
       <QueryStateNotice
@@ -97,17 +79,17 @@ export function PetDetailsPage() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-      <section className="space-y-6">
-        <div className="space-y-4">
+    <div className="space-y-8">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <button
             type="button"
             onClick={() => setIsLightboxOpen(true)}
             className="block w-full overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5"
           >
-            <img src={selectedImage.imageUrl} alt={pet.name} className="h-[28rem] w-full object-cover" />
+            <img src={selectedImage.imageUrl} alt={pet.name} className="aspect-[4/5] w-full object-cover" />
           </button>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-4 gap-3">
             {galleryImages.map((image, index) => (
               <button
                 key={image.id}
@@ -117,7 +99,7 @@ export function PetDetailsPage() {
                   selectedImageIndex === index ? "ring-fern" : "ring-black/5"
                 }`}
               >
-                <img src={image.imageUrl} alt={`${pet.name} view ${index + 1}`} className="h-28 w-full object-cover" />
+                <img src={image.imageUrl} alt={`${pet.name} view ${index + 1}`} className="aspect-square w-full object-cover" />
               </button>
             ))}
           </div>
@@ -126,7 +108,7 @@ export function PetDetailsPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">{pet.category.name}</p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
             <h1 className="text-4xl font-semibold tracking-tight text-ink">{pet.name}</h1>
-            <FavoriteButton listingId={pet.id} />
+            <FavoriteButton listingId={pet.id} className="text-rose-500 drop-shadow-none hover:text-rose-600" />
           </div>
           <p className="mt-2 text-stone-600">
             {pet.city}, {pet.state}
@@ -162,89 +144,7 @@ export function PetDetailsPage() {
         </div>
       </section>
 
-      <aside className="space-y-6">
-        <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="text-xl font-semibold text-ink">Rescuer info</h2>
-          <p className="mt-3 text-sm text-stone-700">
-            {pet.owner?.fullName ?? "PetNest rescuer"}
-            {pet.owner?.city || pet.owner?.state ? ` • ${[pet.owner?.city, pet.owner?.state].filter(Boolean).join(", ")}` : ""}
-          </p>
-          <p className="mt-3 text-sm leading-6 text-stone-700">
-            Requests stay private inside PetNest until the rescuer reviews your message and decides to respond.
-          </p>
-        </div>
-
-        <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="text-xl font-semibold text-ink">Share this listing</h2>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={async () => {
-                await navigator.clipboard.writeText(shareLinks.copyUrl);
-                setShareMessage("Listing link copied.");
-              }}
-              className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink"
-            >
-              Copy link
-            </button>
-            <a href={shareLinks.facebook} target="_blank" rel="noreferrer" className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink">
-              Share to Facebook
-            </a>
-            <a href={shareLinks.email} className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink">
-              Share by email
-            </a>
-          </div>
-          {shareMessage ? <p className="mt-3 text-sm text-emerald-700">{shareMessage}</p> : null}
-        </div>
-
-        <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="text-xl font-semibold text-ink">Report this listing</h2>
-          <p className="mt-2 text-sm leading-6 text-stone-700">
-            Flag listings that look fraudulent, unsafe, or clearly misleading. Reports go to the moderation dashboard.
-          </p>
-          {user ? (
-            <>
-              <input
-                className="mt-4 w-full rounded-2xl border border-stone-200 px-4 py-3"
-                value={reportReason}
-                onChange={(event) => setReportReason(event.target.value)}
-                placeholder="Short reason, e.g. scam, duplicate, misleading"
-              />
-              <textarea
-                className="mt-4 min-h-28 w-full rounded-2xl border border-stone-200 px-4 py-3"
-                value={reportDetails}
-                onChange={(event) => setReportDetails(event.target.value)}
-                placeholder="Explain what looks wrong so admins can review it."
-              />
-              <button
-                type="button"
-                className="mt-4 rounded-full border border-rose-200 px-5 py-3 text-sm font-medium text-rose-700 disabled:opacity-60"
-                onClick={() => reportMutation.mutate()}
-                disabled={!reportFormState.canSubmit}
-              >
-                {reportMutation.isPending ? "Sending report..." : "Submit report"}
-              </button>
-              {reportMutation.isError ? <p className="mt-3 text-sm text-rose-700">{(reportMutation.error as Error).message}</p> : null}
-              {reportMutation.isSuccess ? <p className="mt-3 text-sm text-emerald-700">Report sent to moderators.</p> : null}
-              {!reportFormState.canSubmit ? (
-                <p className="mt-3 text-sm text-stone-600">
-                  {user?.id === pet.owner?.id ? "You cannot report your own listing." : "Add a short reason and a few details first."}
-                </p>
-              ) : null}
-            </>
-          ) : (
-            <div className="mt-4 space-y-3">
-              <p className="text-sm text-stone-700">Log in if you need to flag this listing for moderation.</p>
-              <Link
-                to={getProtectedRedirect(location.pathname, location.search)}
-                className="inline-flex rounded-full border border-ink/10 px-5 py-3 text-sm font-medium text-ink"
-              >
-                Log in to report
-              </Link>
-            </div>
-          )}
-        </div>
-
+      <aside className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <h2 className="text-xl font-semibold text-ink">Adoption request</h2>
           <p className="mt-2 text-sm leading-6 text-stone-700">
@@ -316,6 +216,42 @@ export function PetDetailsPage() {
               {requestFormState.disabledReason}
             </div>
           ) : null}
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <h2 className="text-xl font-semibold text-ink">Rescuer info</h2>
+            <p className="mt-3 text-sm text-stone-700">
+              {pet.owner?.fullName ?? "PetNest rescuer"}
+              {pet.owner?.city || pet.owner?.state ? ` • ${[pet.owner?.city, pet.owner?.state].filter(Boolean).join(", ")}` : ""}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-stone-700">
+              Requests stay private inside PetNest until the rescuer reviews your message and decides to respond.
+            </p>
+          </div>
+
+          <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <h2 className="text-xl font-semibold text-ink">Share this listing</h2>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {listingSocialLinks.map(({ href, label, icon: Icon }) => (
+                <SocialIconLink key={label} href={href} label={`Share ${pet.name} on ${label}`} Icon={Icon} />
+              ))}
+              <button
+                type="button"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(shareLinks.copyUrl);
+                  setShareMessage("Listing link copied.");
+                }}
+                className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink"
+              >
+                Copy link
+              </button>
+              <a href={shareLinks.email} className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink">
+                Share by email
+              </a>
+            </div>
+            {shareMessage ? <p className="mt-3 text-sm text-emerald-700">{shareMessage}</p> : null}
+          </div>
         </div>
       </aside>
 
