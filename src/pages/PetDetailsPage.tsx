@@ -79,13 +79,13 @@ export function PetDetailsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <section className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+    <div className="space-y-5 sm:space-y-7 md:space-y-8">
+      <section className="grid gap-5 sm:gap-7 md:gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <button
             type="button"
             onClick={() => setIsLightboxOpen(true)}
-            className="block w-full overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5"
+            className="block w-full overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:rounded-[28px]"
           >
             <img src={selectedImage.imageUrl} alt={pet.name} className="aspect-[4/5] w-full object-cover" />
           </button>
@@ -104,10 +104,10 @@ export function PetDetailsPage() {
             ))}
           </div>
         </div>
-        <div className="rounded-[28px] bg-white p-8 shadow-sm ring-1 ring-black/5">
+        <div className="rounded-[22px] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6 md:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">{pet.category.name}</p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
-            <h1 className="text-4xl font-semibold tracking-tight text-ink">{pet.name}</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{pet.name}</h1>
             <FavoriteButton listingId={pet.id} className="text-rose-500 drop-shadow-none hover:text-rose-600" />
           </div>
           <p className="mt-2 text-stone-600">
@@ -130,13 +130,13 @@ export function PetDetailsPage() {
           </div>
           <p className="mt-6 text-base leading-7 text-stone-700">{pet.description}</p>
           {pet.rescueStory ? (
-            <div className="mt-6 rounded-3xl bg-sand/55 p-5">
+            <div className="mt-6 rounded-[22px] bg-sand/55 p-4 sm:rounded-3xl sm:p-5">
               <h2 className="text-lg font-semibold text-ink">Rescue story</h2>
               <p className="mt-2 text-sm leading-6 text-stone-700">{pet.rescueStory}</p>
             </div>
           ) : null}
           {pet.healthNotes ? (
-            <div className="mt-6 rounded-3xl bg-canvas p-5">
+            <div className="mt-6 rounded-[22px] bg-canvas p-4 sm:rounded-3xl sm:p-5">
               <h2 className="text-lg font-semibold text-ink">Health notes</h2>
               <p className="mt-2 text-sm leading-6 text-stone-700">{pet.healthNotes}</p>
             </div>
@@ -144,13 +144,13 @@ export function PetDetailsPage() {
         </div>
       </section>
 
-      <aside className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+      <aside className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="rounded-[22px] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6">
           <h2 className="text-xl font-semibold text-ink">Adoption request</h2>
           <p className="mt-2 text-sm leading-6 text-stone-700">
             Contact details stay private. Submit a thoughtful message and the listing owner can review it inside PetNest.
           </p>
-          <div className="mt-4 rounded-3xl bg-sand/50 p-4 text-sm leading-6 text-stone-700">
+          <div className="mt-4 rounded-[22px] bg-sand/50 p-4 text-sm leading-6 text-stone-700 sm:rounded-3xl">
             <p className="font-medium text-ink">What happens next</p>
             <ol className="mt-2 space-y-1">
               <li>1. Send one clear request with enough detail for a quick first review.</li>
@@ -212,14 +212,14 @@ export function PetDetailsPage() {
             </div>
           )}
           {user && !requestFormState.canSubmit ? (
-            <div className="mt-4 rounded-3xl bg-stone-100 p-4 text-sm text-stone-700">
+            <div className="mt-4 rounded-[22px] bg-stone-100 p-4 text-sm text-stone-700 sm:rounded-3xl">
               {requestFormState.disabledReason}
             </div>
           ) : null}
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="space-y-5 sm:space-y-6">
+          <div className="rounded-[22px] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6">
             <h2 className="text-xl font-semibold text-ink">Rescuer info</h2>
             <p className="mt-3 text-sm text-stone-700">
               {pet.owner?.fullName ?? "PetNest rescuer"}
@@ -230,7 +230,7 @@ export function PetDetailsPage() {
             </p>
           </div>
 
-          <div className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[22px] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6">
             <h2 className="text-xl font-semibold text-ink">Share this listing</h2>
             <div className="mt-4 flex flex-wrap gap-3">
               {listingSocialLinks.map(({ href, label, icon: Icon }) => (

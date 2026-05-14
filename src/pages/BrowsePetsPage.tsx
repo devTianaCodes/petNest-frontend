@@ -88,19 +88,19 @@ export function BrowsePetsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-7 md:space-y-8">
       <PageHeader
         eyebrow="Browse"
         title="Adoptable pets"
         description="Search current published listings from verified users and rescue-focused owners."
       />
-      <div className="grid gap-8 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
-        <aside className="space-y-5 xl:sticky xl:top-28">
-          <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+      <div className="grid gap-5 sm:gap-6 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
+        <aside className="space-y-4 sm:space-y-5 xl:sticky xl:top-28">
+          <section className="rounded-[22px] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">Filters</p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Narrow the match</h2>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight text-ink sm:text-2xl">Narrow the match</h2>
               </div>
               {hasActiveFilters ? (
                 <button
@@ -190,7 +190,7 @@ export function BrowsePetsPage() {
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-[#8eaf99] bg-[#cfe0d4] p-6 text-ink shadow-sm">
+          <section className="rounded-[22px] border border-[#8eaf99] bg-[#cfe0d4] p-4 text-ink shadow-sm sm:rounded-[28px] sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern/80">View controls</p>
             <div className="mt-4 space-y-4">
               <label className="block">
@@ -229,12 +229,12 @@ export function BrowsePetsPage() {
           </section>
         </aside>
 
-        <section className="space-y-6">
-          <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <section className="space-y-5 sm:space-y-6">
+          <section className="rounded-[22px] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-terracotta">{summary.filterLabel}</p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{summary.countLabel}</h2>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight text-ink sm:text-2xl">{summary.countLabel}</h2>
                 <p className="mt-2 text-sm text-stone-500">{summary.pageLabel}</p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
@@ -277,7 +277,7 @@ export function BrowsePetsPage() {
             )}
           </section>
 
-          <section className={view === "list" ? "grid gap-6" : "grid gap-6 md:grid-cols-2 xl:grid-cols-3"}>
+          <section className={view === "list" ? "grid gap-4 sm:gap-6" : "grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3"}>
             {categoriesQuery.isError ? (
               <QueryStateNotice
                 title="Categories could not load"
@@ -306,7 +306,7 @@ export function BrowsePetsPage() {
           </section>
 
           {petsQuery.data?.items.length ? (
-            <section className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] bg-white p-5 shadow-sm ring-1 ring-black/5">
+            <section className="flex flex-wrap items-center justify-between gap-4 rounded-[22px] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-5">
               <p className="text-sm text-stone-700">{summary.pageLabel}</p>
               <div className="flex items-center gap-3">
                 <button

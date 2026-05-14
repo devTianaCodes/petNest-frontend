@@ -43,7 +43,7 @@ export function AdoptPage() {
         <QueryStateNotice title="Loading animals" message="Fetching published adoption listings." />
       ) : petsQuery.data?.items.length ? (
         <>
-          <section className="grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
+          <section className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {petsQuery.data.items.map((pet) => (
               <PetCard key={pet.id} pet={pet} />
             ))}

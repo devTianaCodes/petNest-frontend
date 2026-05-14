@@ -9,9 +9,9 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
   const { coverImage, hoverImage, detailLabel } = getPetCardMeta(pet);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
-      <div className="relative h-56 w-full overflow-hidden bg-stone-100">
-        <div className="absolute right-4 top-4 z-10">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:rounded-[28px]">
+      <div className="relative h-52 w-full overflow-hidden bg-stone-100 sm:h-56">
+        <div className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4">
           <FavoriteButton listingId={pet.id} />
         </div>
         <img
@@ -29,7 +29,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
           />
         ) : null}
       </div>
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-fern">{pet.category.name}</p>
@@ -41,9 +41,12 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
           {showStatus ? <StatusBadge status={pet.status} /> : null}
         </div>
         <p className="mt-4 line-clamp-3 text-sm leading-6 text-stone-700">{pet.description}</p>
-        <div className="mt-auto flex items-center justify-between gap-4 pt-4">
-          <p className="text-sm text-stone-500">{detailLabel}</p>
-          <Link to={buildPetDetailsPath(pet)} className="rounded-full bg-fern px-5 py-2 text-sm font-medium text-white">
+        <div className="mt-auto grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 pt-4">
+          <p className="min-w-0 pr-1 text-sm leading-6 text-stone-500">{detailLabel}</p>
+          <Link
+            to={buildPetDetailsPath(pet)}
+            className="inline-flex min-w-[5.5rem] shrink-0 justify-center rounded-full bg-fern px-5 py-2 text-sm font-medium text-white"
+          >
             View
           </Link>
         </div>

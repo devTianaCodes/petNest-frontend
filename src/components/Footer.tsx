@@ -40,8 +40,8 @@ function FooterColumn({ title, links }: FooterColumnProps) {
 
 export function Footer() {
   return (
-    <footer className="mx-auto mt-6 w-full max-w-6xl border-t border-ink/10 px-10 pb-6 pt-8 md:px-12 md:pb-8 md:pt-10">
-      <div className="grid gap-8 md:grid-cols-2 xl:flex xl:items-start xl:justify-between xl:gap-8">
+    <footer className="mx-auto mt-6 w-full max-w-6xl border-t border-ink/10 px-3 pb-5 pt-6 sm:px-4 md:px-12 md:pb-8 md:pt-10">
+      <div className="grid gap-6 md:grid-cols-2 md:gap-8 xl:flex xl:items-start xl:justify-between xl:gap-8">
         <section className="space-y-4 md:col-span-2 xl:w-[40%] xl:max-w-[460px]">
           <div className="space-y-2">
             <Link to="/home" className="inline-flex items-center gap-3">

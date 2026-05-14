@@ -70,12 +70,12 @@ export function HomePage() {
   const statCardToneClasses = ["bg-white", "bg-fern/10", "bg-terracotta/10"];
 
   return (
-    <div className="space-y-10">
-      <section className="grid gap-8 rounded-[36px] bg-white p-10 shadow-sm ring-1 ring-black/5 md:grid-cols-[1.1fr_0.9fr] md:p-14">
-        <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8 md:space-y-10">
+      <section className="grid gap-6 rounded-[24px] bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-7 md:grid-cols-[1.1fr_0.9fr] md:gap-8 md:rounded-[36px] md:p-14">
+        <div className="space-y-4 sm:space-y-6">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">Rescue-first adoption platform</p>
-          <h1 className="max-w-xl text-5xl font-semibold tracking-tight text-ink">Fall in love, adopt a pet</h1>
-          <p className="max-w-xl text-lg leading-8 text-stone-700">
+          <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-ink sm:text-5xl">Fall in love, adopt a pet</h1>
+          <p className="max-w-xl text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
             PetNest helps rescuers publish structured adoption listings and gives adopters a calmer, more trustworthy
             way to connect.
           </p>
@@ -88,7 +88,7 @@ export function HomePage() {
             </Link>
           </div>
         </div>
-        <div className="relative min-h-[320px] overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
+        <div className="relative min-h-[240px] overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:min-h-[320px] md:rounded-[28px]">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/hero.png')" }}
@@ -109,7 +109,7 @@ export function HomePage() {
           {statCards.map((card, index) => (
             <article
               key={card.label}
-              className={`rounded-[28px] p-6 shadow-sm ring-1 ring-black/5 ${statCardToneClasses[index % statCardToneClasses.length]}`}
+              className={`rounded-[22px] p-5 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6 ${statCardToneClasses[index % statCardToneClasses.length]}`}
             >
               <p className="text-sm font-medium text-stone-500">{card.label}</p>
               <p className="mt-3 text-4xl font-semibold tracking-tight text-ink">{card.value}</p>
@@ -119,14 +119,14 @@ export function HomePage() {
         </section>
       )}
 
-      <section className="space-y-4 rounded-[32px] bg-sand/60 p-8 shadow-sm ring-1 ring-black/5">
+      <section className="space-y-4 rounded-[24px] bg-sand/60 p-5 shadow-sm ring-1 ring-black/5 sm:p-7 md:rounded-[32px] md:p-8">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-terracotta">Why PetNest feels calmer</p>
-          <h2 className="mt-2 text-4xl font-semibold tracking-tight text-ink">A safer place for rescued pets and the people helping them</h2>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">A safer place for rescued pets and the people helping them</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {valueCards.map((card) => (
-            <article key={card.title} className={`rounded-[28px] p-6 shadow-sm ring-1 ring-black/5 ${card.toneClassName}`}>
+            <article key={card.title} className={`rounded-[22px] p-5 shadow-sm ring-1 ring-black/5 sm:rounded-[28px] sm:p-6 ${card.toneClassName}`}>
               <h2 className="text-xl font-semibold text-ink">{card.title}</h2>
               <p className="mt-3 text-sm leading-6 text-stone-700">{card.description}</p>
             </article>
@@ -134,11 +134,11 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="space-y-6 rounded-[32px] bg-fern/10 p-8 shadow-sm ring-1 ring-black/5">
+      <section className="space-y-5 rounded-[24px] bg-fern/10 p-5 shadow-sm ring-1 ring-black/5 sm:p-7 md:space-y-6 md:rounded-[32px] md:p-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-terracotta">Featured animals</p>
-            <h2 className="mt-2 text-4xl font-semibold tracking-tight text-ink">Meet a few pets looking for a stable home</h2>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Meet a few pets looking for a stable home</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-700">
               A few recent listings from rescuers and foster homes already using the calmer PetNest flow.
             </p>
@@ -171,20 +171,20 @@ export function HomePage() {
       </section>
 
       <section className="space-y-6">
-        <div className="rounded-[32px] bg-terracotta/10 p-8 shadow-sm ring-1 ring-black/5">
+        <div className="rounded-[24px] bg-terracotta/10 p-5 shadow-sm ring-1 ring-black/5 sm:p-7 md:rounded-[32px] md:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern">Success stories</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Love, safety, and a place to belong</h2>
           <div className="mt-6 grid gap-4 xl:grid-cols-2">
             {successStories.map((story) => (
-              <article key={story.person} className="group overflow-hidden rounded-[28px] bg-canvas/80 lg:h-[320px]">
+              <article key={story.person} className="group overflow-hidden rounded-[22px] bg-canvas/80 sm:rounded-[28px] lg:h-[320px]">
                 <div className="lg:flex lg:h-full lg:items-stretch">
-                  <div className="flex min-h-[320px] flex-col p-6 lg:h-full lg:min-h-0 lg:basis-3/5 lg:px-8 lg:pt-8">
+                  <div className="flex min-h-[260px] flex-col p-5 sm:min-h-[320px] sm:p-6 lg:h-full lg:min-h-0 lg:basis-3/5 lg:px-8 lg:pt-8">
                     <blockquote>
                       <p className="text-[1.125rem] leading-[1.6] text-stone-700 lg:text-[1.125rem] lg:leading-[1.6]">“{story.quote}”</p>
                     </blockquote>
                     <footer className="mt-[30px] text-sm font-medium text-ink">{story.person}</footer>
                   </div>
-                  <div className="relative min-h-[320px] overflow-hidden leading-none lg:h-full lg:min-h-0 lg:basis-2/5">
+                  <div className="relative min-h-[260px] overflow-hidden leading-none sm:min-h-[320px] lg:h-full lg:min-h-0 lg:basis-2/5">
                     <img
                       src={story.imageA}
                       alt={story.altA}
@@ -202,7 +202,7 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="rounded-[32px] border border-[#8eaf99] bg-[#cfe0d4] p-8 text-ink shadow-sm">
+        <div className="rounded-[24px] border border-[#8eaf99] bg-[#cfe0d4] p-5 text-ink shadow-sm sm:p-7 md:rounded-[32px] md:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fern/90">Ready to help?</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight">Adopt now or post an animal that needs a safer match.</h2>
           <p className="mt-4 text-sm leading-7 text-ink/75">
