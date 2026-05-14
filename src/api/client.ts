@@ -1,4 +1,21 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const LOCAL_API_URL = "http://localhost:4000/api";
+const PRODUCTION_API_URL = "https://petnest-api-production.up.railway.app/api";
+
+function resolveApiUrl() {
+  const configuredApiUrl = import.meta.env.VITE_API_URL;
+  const hostname = typeof window !== "undefined" ? window.location.hostname : "";
+  const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
+  const isLocalApiUrl =
+    configuredApiUrl?.includes("localhost") || configuredApiUrl?.includes("127.0.0.1");
+
+  if (configuredApiUrl && (!isLocalApiUrl || isLocalHost)) {
+    return configuredApiUrl;
+  }
+
+  return isLocalHost ? LOCAL_API_URL : PRODUCTION_API_URL;
+}
+
+const API_URL = resolveApiUrl();
 
 let accessToken: string | null = null;
 
