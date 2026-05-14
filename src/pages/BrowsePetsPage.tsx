@@ -12,7 +12,7 @@ import { createBrowseSearchParams, getBrowseFilterChips, getBrowseFilters } from
 import { getBrowseResultsSummary } from "../features/pets/browseSummary";
 import { createSavedSearchLabel } from "../features/saved-searches/savedSearchMeta";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 8;
 
 export function BrowsePetsPage() {
   const queryClient = useQueryClient();

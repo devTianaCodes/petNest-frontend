@@ -5,7 +5,7 @@ import { PageHeader } from "../components/PageHeader";
 import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 8;
 
 export function AdoptPage() {
   const [page, setPage] = useState(1);
