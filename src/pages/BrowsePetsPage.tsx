@@ -106,7 +106,7 @@ export function BrowsePetsPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="rounded-full border border-stone-200 px-4 py-2 text-sm font-medium text-ink"
+                  className="shrink-0 whitespace-nowrap rounded-full border border-stone-200 px-4 py-2 text-sm font-medium text-ink"
                 >
                   Clear all
                 </button>
@@ -216,7 +216,7 @@ export function BrowsePetsPage() {
                       key={nextView}
                       type="button"
                       onClick={() => updateFilters({ view: nextView as typeof view })}
-                      className={`rounded-full px-4 py-2 text-sm font-medium ${
+                      className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium ${
                         view === nextView ? "bg-fern text-white" : "text-ink/70"
                       }`}
                     >
@@ -247,12 +247,12 @@ export function BrowsePetsPage() {
                       saveSearchMutation.mutate();
                     }}
                     disabled={saveSearchMutation.isPending}
-                    className="rounded-full bg-fern px-5 py-3 text-sm font-medium text-white disabled:opacity-40"
+                    className="whitespace-nowrap rounded-full bg-fern px-5 py-3 text-sm font-medium text-white disabled:opacity-40"
                   >
                     {saveSearchMutation.isPending ? "Saving..." : "Save this search"}
                   </button>
                 ) : null}
-                <span className="rounded-full bg-sand px-4 py-2 text-sm font-medium text-ink">
+                <span className="whitespace-nowrap rounded-full bg-sand px-4 py-2 text-sm font-medium text-ink">
                   {view === "grid" ? "Grid view" : "List view"}
                 </span>
               </div>
@@ -266,7 +266,7 @@ export function BrowsePetsPage() {
                     key={chip.key}
                     type="button"
                     onClick={() => updateFilters({ [chip.key]: "" }, true)}
-                    className="rounded-full bg-fern/10 px-4 py-2 text-sm font-medium text-fern"
+                    className="whitespace-nowrap rounded-full bg-fern/10 px-4 py-2 text-sm font-medium text-fern"
                   >
                     {chip.label} ×
                   </button>
@@ -313,7 +313,7 @@ export function BrowsePetsPage() {
                   type="button"
                   onClick={() => updateFilters({ page: Math.max(1, page - 1) })}
                   disabled={page === 1}
-                  className="rounded-full border border-stone-200 px-5 py-3 text-sm font-medium text-ink disabled:opacity-40"
+                  className="whitespace-nowrap rounded-full border border-stone-200 px-5 py-3 text-sm font-medium text-ink disabled:opacity-40"
                 >
                   Previous
                 </button>
@@ -321,7 +321,7 @@ export function BrowsePetsPage() {
                   type="button"
                   onClick={() => updateFilters({ page: Math.min(totalPages, page + 1) })}
                   disabled={page >= totalPages}
-                  className="rounded-full bg-ink px-5 py-3 text-sm font-medium text-white disabled:opacity-40"
+                  className="whitespace-nowrap rounded-full bg-ink px-5 py-3 text-sm font-medium text-white disabled:opacity-40"
                 >
                   Next
                 </button>
