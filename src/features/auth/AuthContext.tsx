@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { login, logout, refreshSession, register } from "../../api/auth";
+import { demoLogin, login, logout, refreshSession, register } from "../../api/auth";
 import { setAccessToken } from "../../api/client";
 import type { AuthUser } from "../../types/auth";
 
@@ -8,6 +8,7 @@ type AuthContextValue = {
   accessToken: string | null;
   isLoading: boolean;
   signIn: (payload: { email: string; password: string }) => Promise<void>;
+  signInDemo: () => Promise<void>;
   signUp: (payload: { fullName: string; email: string; password: string }) => Promise<{ verificationUrl?: string }>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -45,6 +46,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAccessToken(response.accessToken);
   }
 
+  async function signInDemo() {
+    authMutationVersion.current += 1;
+    const response = await demoLogin();
+    setUser(response.user);
+    setToken(response.accessToken);
+    setAccessToken(response.accessToken);
+  }
+
   async function signUp(payload: { fullName: string; email: string; password: string }) {
     return register(payload);
   }
@@ -71,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         accessToken,
         isLoading,
         signIn,
+        signInDemo,
         signUp,
         signOut,
         refresh

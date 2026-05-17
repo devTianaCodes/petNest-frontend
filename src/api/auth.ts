@@ -25,6 +25,12 @@ export function login(payload: { email: string; password: string }) {
   });
 }
 
+export function demoLogin() {
+  return apiRequest<AuthResponse>("/auth/demo-login", {
+    method: "POST"
+  });
+}
+
 export function refreshSession() {
   return apiRequest<AuthResponse>("/auth/refresh", {
     method: "POST"

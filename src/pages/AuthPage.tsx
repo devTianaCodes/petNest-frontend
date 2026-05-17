@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
 import { getPostLoginRedirect } from "../features/auth/authRedirect";
@@ -15,39 +15,6 @@ type PasswordToggleButtonProps = {
   visible: boolean;
   onToggle: () => void;
 };
-
-type DemoLoginPayload = {
-  email: string;
-  password: string;
-  fullName: string;
-  mode: AuthMode;
-  redirect: string | null;
-  autologin: boolean;
-};
-
-function readDemoPayload(): DemoLoginPayload | null {
-  if (typeof window === "undefined" || !window.location.hash.startsWith("#demo=")) {
-    return null;
-  }
-
-  const params = new URLSearchParams(window.location.hash.slice("#demo=".length));
-  return {
-    email: params.get("email") ?? "",
-    password: params.get("password") ?? "",
-    fullName: params.get("fullName") ?? "",
-    mode: params.get("mode") === "register" ? "register" : "login",
-    redirect: params.get("redirect"),
-    autologin: params.get("autologin") === "1"
-  };
-}
-
-function clearDemoHash() {
-  if (typeof window === "undefined" || !window.location.hash.startsWith("#demo=")) {
-    return;
-  }
-
-  window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
-}
 
 function PasswordToggleButton({ visible, onToggle }: PasswordToggleButtonProps) {
   return (
@@ -70,7 +37,7 @@ function PasswordToggleButton({ visible, onToggle }: PasswordToggleButtonProps) 
 export function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signInDemo, signUp } = useAuth();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerName, setRegisterName] = useState("");
@@ -83,9 +50,6 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [isLoginSubmitting, setIsLoginSubmitting] = useState(false);
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
   const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
-  const [demoLogin, setDemoLogin] = useState<{ email: string; password: string } | null>(null);
-  const [demoRedirect, setDemoRedirect] = useState<string | null>(null);
-  const autoLoginStarted = useRef(false);
 
   const modeParam = searchParams.get("mode");
   const mode: AuthMode = modeParam === "register" ? "register" : initialMode;
@@ -120,72 +84,6 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
     setRegisterError(null);
   }
 
-  useEffect(() => {
-    function applyDemoPayload() {
-      const payload = readDemoPayload();
-      if (!payload) {
-        return;
-      }
-
-      setDemoRedirect(payload.redirect);
-      setMode(payload.mode);
-
-      if (payload.mode === "register") {
-        setRegisterName(payload.fullName);
-        setRegisterEmail(payload.email);
-        setRegisterPassword(payload.password);
-        setConfirmPassword(payload.password);
-        return;
-      }
-
-      setLoginEmail(payload.email);
-      setLoginPassword(payload.password);
-
-      if (!payload.autologin || !payload.email || !payload.password || autoLoginStarted.current) {
-        return;
-      }
-
-      autoLoginStarted.current = true;
-      clearDemoHash();
-      setDemoLogin({
-        email: payload.email.trim(),
-        password: payload.password
-      });
-    }
-
-    applyDemoPayload();
-    window.addEventListener("hashchange", applyDemoPayload);
-    return () => window.removeEventListener("hashchange", applyDemoPayload);
-  }, []);
-
-  useEffect(() => {
-    if (!demoLogin || isLoginSubmitting) {
-      return;
-    }
-
-    const nextDemoLogin = demoLogin;
-    if (!nextDemoLogin) {
-      return;
-    }
-
-    async function runDemoLogin() {
-      setLoginError(null);
-      setIsLoginSubmitting(true);
-      try {
-        await signIn(nextDemoLogin);
-        navigate(getPostLoginRedirect(demoRedirect ?? redirectTarget), { replace: true });
-      } catch (authError) {
-        setLoginError((authError as Error).message);
-        autoLoginStarted.current = false;
-      } finally {
-        setIsLoginSubmitting(false);
-        setDemoLogin(null);
-      }
-    }
-
-    void runDemoLogin();
-  }, [demoLogin, demoRedirect, isLoginSubmitting, navigate, redirectTarget, signIn]);
-
   async function submitLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError(null);
@@ -203,7 +101,20 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
     setIsLoginSubmitting(true);
     try {
       await signIn({ email: loginValidation.trimmedEmail, password: loginPassword });
-      navigate(getPostLoginRedirect(demoRedirect ?? redirectTarget), { replace: true });
+      navigate(getPostLoginRedirect(redirectTarget), { replace: true });
+    } catch (authError) {
+      setLoginError((authError as Error).message);
+    } finally {
+      setIsLoginSubmitting(false);
+    }
+  }
+
+  async function continueAsDemoUser() {
+    setLoginError(null);
+    setIsLoginSubmitting(true);
+    try {
+      await signInDemo();
+      navigate(getPostLoginRedirect(redirectTarget), { replace: true });
     } catch (authError) {
       setLoginError((authError as Error).message);
     } finally {
@@ -260,11 +171,11 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
       </aside>
 
       <div className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-black/5">
-        <div className="flex items-center gap-2 rounded-full bg-sand/70 p-1">
+        <div className="grid grid-cols-2 items-center gap-2 rounded-full bg-sand/70 p-1">
           <button
             type="button"
             onClick={() => setMode("login")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+            className={`w-full rounded-full px-4 py-2 text-center text-sm font-medium transition ${
               mode === "login" ? "bg-[#cfe0d4] text-ink shadow-sm" : "text-stone-600"
             }`}
           >
@@ -273,7 +184,7 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
           <button
             type="button"
             onClick={() => setMode("register")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+            className={`w-full rounded-full px-4 py-2 text-center text-sm font-medium transition ${
               mode === "register" ? "bg-fern text-white shadow-sm" : "text-stone-600"
             }`}
           >
@@ -341,6 +252,19 @@ export function AuthPage({ initialMode = "login" }: AuthPageProps) {
                 Register here
               </button>
             </p>
+            <div className="rounded-[24px] bg-sand/60 p-4">
+              <p className="text-sm text-stone-700">
+                Want to explore PetNest without creating an account?
+              </p>
+              <button
+                type="button"
+                onClick={continueAsDemoUser}
+                disabled={isLoginSubmitting}
+                className="mt-3 rounded-full border border-fern/30 px-5 py-3 text-sm font-medium text-fern transition hover:bg-fern hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isLoginSubmitting ? "Opening demo..." : "Continue as demo user"}
+              </button>
+            </div>
           </form>
         ) : (
           <form className="mt-6 space-y-4" onSubmit={submitRegister}>
