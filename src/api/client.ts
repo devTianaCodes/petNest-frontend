@@ -1,5 +1,5 @@
 const LOCAL_API_URL = "http://localhost:4000/api";
-const PRODUCTION_API_URL = "https://petnest-api-production.up.railway.app/api";
+const MISSING_API_URL_MESSAGE = "VITE_API_URL must be configured for the deployed PetNest frontend.";
 
 function resolveApiUrl() {
   const configuredApiUrl = import.meta.env.VITE_API_URL;
@@ -12,7 +12,11 @@ function resolveApiUrl() {
     return configuredApiUrl;
   }
 
-  return isLocalHost ? LOCAL_API_URL : PRODUCTION_API_URL;
+  if (isLocalHost) {
+    return LOCAL_API_URL;
+  }
+
+  return "";
 }
 
 const API_URL = resolveApiUrl();
@@ -30,6 +34,10 @@ type RequestOptions = {
 };
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  if (!API_URL) {
+    throw new Error(MISSING_API_URL_MESSAGE);
+  }
+
   const headers: HeadersInit = {};
 
   if (!options.formData && options.body !== undefined) {
