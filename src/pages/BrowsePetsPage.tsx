@@ -11,6 +11,7 @@ import { useAuth } from "../features/auth/AuthContext";
 import { createBrowseSearchParams, getBrowseFilterChips, getBrowseFilters } from "../features/pets/browseParams";
 import { getBrowseResultsSummary } from "../features/pets/browseSummary";
 import { createSavedSearchLabel } from "../features/saved-searches/savedSearchMeta";
+import { PUBLIC_QUERY_STALE_TIME_MS } from "../lib/query-client";
 
 const PAGE_SIZE = 8;
 
@@ -31,12 +32,14 @@ export function BrowsePetsPage() {
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
-    queryFn: getCategories
+    queryFn: getCategories,
+    staleTime: PUBLIC_QUERY_STALE_TIME_MS
   });
 
   const petsQuery = useQuery({
     queryKey: ["pets", search, category, sex, size, city, state, sort, page],
-    queryFn: () => getPets(params)
+    queryFn: () => getPets(params),
+    staleTime: PUBLIC_QUERY_STALE_TIME_MS
   });
 
   const total = petsQuery.data?.pagination?.total ?? 0;

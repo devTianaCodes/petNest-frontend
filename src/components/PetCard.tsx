@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { PetListing } from "../types/pets";
+import { getOptimizedPetImageUrl } from "../features/pets/petImageUrl";
 import { buildPetDetailsPath } from "../features/pets/petPaths";
 import { FavoriteButton } from "./FavoriteButton";
 import { StatusBadge } from "./StatusBadge";
@@ -7,6 +8,8 @@ import { getPetCardMeta } from "./petCardMeta";
 
 export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStatus?: boolean }) {
   const { coverImage, hoverImage, detailLabel } = getPetCardMeta(pet);
+  const optimizedCoverImage = getOptimizedPetImageUrl(coverImage, 720);
+  const optimizedHoverImage = hoverImage ? getOptimizedPetImageUrl(hoverImage, 720) : undefined;
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:rounded-[28px]">
@@ -15,16 +18,21 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
           <FavoriteButton listingId={pet.id} />
         </div>
         <img
-          src={coverImage}
+          src={optimizedCoverImage}
           alt={pet.name}
+          loading="lazy"
+          decoding="async"
           className={`absolute inset-0 h-full w-full object-cover transition duration-500 ${
-            hoverImage ? "opacity-100 group-hover:opacity-0" : ""
+            optimizedHoverImage ? "opacity-100 group-hover:opacity-0" : ""
           }`}
         />
-        {hoverImage ? (
+        {optimizedHoverImage ? (
           <img
-            src={hoverImage}
+            src={optimizedHoverImage}
             alt={`${pet.name} alternate view`}
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
             className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
           />
         ) : null}

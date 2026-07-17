@@ -10,6 +10,8 @@ import { getAdoptionRequestFormState } from "../features/adoption/requestState";
 import { getProtectedRedirect } from "../features/auth/authRedirect";
 import { useAuth } from "../features/auth/AuthContext";
 import { getPetGalleryImages, getPetShareLinks } from "../features/pets/petDetailsMeta";
+import { getOptimizedPetImageUrl } from "../features/pets/petImageUrl";
+import { PUBLIC_QUERY_STALE_TIME_MS } from "../lib/query-client";
 
 export function PetDetailsPage() {
   const { id = "" } = useParams();
@@ -26,7 +28,8 @@ export function PetDetailsPage() {
   const petQuery = useQuery({
     queryKey: ["pet", id],
     queryFn: () => getPet(id),
-    enabled: Boolean(id)
+    enabled: Boolean(id),
+    staleTime: PUBLIC_QUERY_STALE_TIME_MS
   });
 
   const requestMutation = useMutation({
@@ -87,7 +90,13 @@ export function PetDetailsPage() {
             onClick={() => setIsLightboxOpen(true)}
             className="block w-full overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:rounded-[28px]"
           >
-            <img src={selectedImage.imageUrl} alt={pet.name} className="aspect-[4/5] w-full object-cover" />
+            <img
+              src={getOptimizedPetImageUrl(selectedImage.imageUrl, 960)}
+              alt={pet.name}
+              decoding="async"
+              fetchPriority="high"
+              className="aspect-[4/5] w-full object-cover"
+            />
           </button>
           <div className="grid grid-cols-4 gap-3">
             {galleryImages.map((image, index) => (
@@ -99,7 +108,13 @@ export function PetDetailsPage() {
                   selectedImageIndex === index ? "ring-fern" : "ring-black/5"
                 }`}
               >
-                <img src={image.imageUrl} alt={`${pet.name} view ${index + 1}`} className="aspect-square w-full object-cover" />
+                <img
+                  src={getOptimizedPetImageUrl(image.imageUrl, 240)}
+                  alt={`${pet.name} view ${index + 1}`}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-square w-full object-cover"
+                />
               </button>
             ))}
           </div>
@@ -265,7 +280,13 @@ export function PetDetailsPage() {
             >
               Close
             </button>
-            <img src={selectedImage.imageUrl} alt={pet.name} className="h-[70vh] w-full rounded-[24px] object-cover" />
+            <img
+              src={getOptimizedPetImageUrl(selectedImage.imageUrl, 1600)}
+              alt={pet.name}
+              decoding="async"
+              fetchPriority="high"
+              className="h-[70vh] w-full rounded-[24px] object-cover"
+            />
             <div className="mt-4 grid gap-3 md:grid-cols-4">
               {galleryImages.map((image, index) => (
                 <button
@@ -276,7 +297,13 @@ export function PetDetailsPage() {
                     selectedImageIndex === index ? "ring-fern" : "ring-black/5"
                   }`}
                 >
-                  <img src={image.imageUrl} alt={`${pet.name} thumbnail ${index + 1}`} className="h-24 w-full object-cover" />
+                  <img
+                    src={getOptimizedPetImageUrl(image.imageUrl, 240)}
+                    alt={`${pet.name} thumbnail ${index + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-24 w-full object-cover"
+                  />
                 </button>
               ))}
             </div>

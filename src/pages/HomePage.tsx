@@ -6,6 +6,7 @@ import { getPets } from "../api/pets";
 import { PetCard } from "../components/PetCard";
 import { QueryStateNotice } from "../components/QueryStateNotice";
 import { getHomeStatCards, getHomeValueCards } from "../features/home/homePageMeta";
+import { PUBLIC_QUERY_STALE_TIME_MS } from "../lib/query-client";
 
 const successStories: Array<{
   quote: string;
@@ -18,32 +19,32 @@ const successStories: Array<{
   {
     quote: "Adopting her filled our home with joy, and watching her relax with our family feels like the happiest ending we could have hoped for.",
     person: "Maya, foster volunteer",
-    imageA: "/success-stories/story1A.png",
-    imageB: "/success-stories/story1B.png",
+    imageA: "/success-stories/story1A.jpg",
+    imageB: "/success-stories/story1B.jpg",
     altA: "Maya with a rescued pet",
     altB: "Maya caring for the same rescue pet"
   },
   {
     quote: "The structured pet profile made it easier to decide if the match was right for our family.",
     person: "Elena, adopter",
-    imageA: "/success-stories/story2A.png",
-    imageB: "/success-stories/story2B.png",
+    imageA: "/success-stories/story2A.jpg",
+    imageB: "/success-stories/story2B.jpg",
     altA: "Elena with an adopted pet",
     altB: "Elena at home with the adopted pet"
   },
   {
     quote: "The day we adopted him, our family felt complete, and now every room in the house feels warmer with him in it.",
     person: "Roberta, adopter",
-    imageA: "/success-stories/story3A.png",
-    imageB: "/success-stories/story3B.png",
+    imageA: "/success-stories/story3A.jpg",
+    imageB: "/success-stories/story3B.jpg",
     altA: "Roberta with her adopted pet",
     altB: "Roberta relaxing at home with the adopted pet"
   },
   {
     quote: "Adopting her brought so much happiness into our family, and seeing her safe, playful, and loved every day is everything we wanted.",
     person: "Mark, adopter",
-    imageA: "/success-stories/story4A.png",
-    imageB: "/success-stories/story4B.png",
+    imageA: "/success-stories/story4A.jpg",
+    imageB: "/success-stories/story4B.jpg",
     altA: "Mark with his adopted pet",
     altB: "Mark enjoying time at home with the adopted pet"
   }
@@ -52,7 +53,8 @@ const successStories: Array<{
 export function HomePage() {
   const statsQuery = useQuery({
     queryKey: ["home-stats"],
-    queryFn: getHomeStats
+    queryFn: getHomeStats,
+    staleTime: PUBLIC_QUERY_STALE_TIME_MS
   });
   const featuredParams = useMemo(() => {
     const params = new URLSearchParams();
@@ -62,7 +64,8 @@ export function HomePage() {
   }, []);
   const featuredPetsQuery = useQuery({
     queryKey: ["pets", "home-featured"],
-    queryFn: () => getPets(featuredParams)
+    queryFn: () => getPets(featuredParams),
+    staleTime: PUBLIC_QUERY_STALE_TIME_MS
   });
 
   const statCards = statsQuery.data ? getHomeStatCards(statsQuery.data.stats) : [];
@@ -188,11 +191,16 @@ export function HomePage() {
                     <img
                       src={story.imageA}
                       alt={story.altA}
+                      loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 block h-full w-full object-cover transition duration-500 group-hover:opacity-0"
                     />
                     <img
                       src={story.imageB}
                       alt={story.altB}
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
                       className="absolute inset-0 block h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
                     />
                   </div>
