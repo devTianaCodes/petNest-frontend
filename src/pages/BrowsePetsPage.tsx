@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { getCategories } from "../api/categories";
@@ -23,6 +23,10 @@ export function BrowsePetsPage() {
   const { user } = useAuth();
   const filters = getBrowseFilters(searchParams);
   const { search, category, sex, size, city, state, sort, view, page } = filters;
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [page]);
 
   const params = useMemo(() => {
     const next = createBrowseSearchParams(filters);

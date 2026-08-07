@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPets } from "../api/pets";
 import { PageHeader } from "../components/PageHeader";
@@ -9,6 +9,10 @@ const PAGE_SIZE = 8;
 
 export function AdoptPage() {
   const [page, setPage] = useState(1);
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [page]);
 
   const params = useMemo(() => {
     const next = new URLSearchParams();
