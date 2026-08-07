@@ -92,9 +92,17 @@ export function HomePage() {
           </div>
         </div>
         <div className="relative min-h-[240px] overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:min-h-[320px] md:rounded-[28px]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('/hero.png')" }}
+          <img
+            src="/hero-960.jpg"
+            srcSet="/hero-480.jpg 480w, /hero-960.jpg 960w, /hero-1408.jpg 1408w"
+            sizes="(min-width: 768px) 42vw, calc(100vw - 2.5rem)"
+            width="1408"
+            height="768"
+            alt="A woman relaxing at home with a rescued dog and cat"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover object-center"
           />
         </div>
       </section>
