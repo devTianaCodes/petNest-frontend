@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/verify-performance-assets.mjs",
     "preview": "vite preview",
     "test": "tsc -p tsconfig.test.json && node --test tests/*.test.mjs"
   },
