@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { PetListing } from "../types/pets";
 import { getOptimizedPetImageUrl } from "../features/pets/petImageUrl";
@@ -6,13 +7,33 @@ import { FavoriteButton } from "./FavoriteButton";
 import { StatusBadge } from "./StatusBadge";
 import { getPetCardMeta } from "./petCardMeta";
 
-export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStatus?: boolean }) {
+type PetCardProps = {
+  pet: PetListing;
+  showStatus?: boolean;
+  priority?: boolean;
+};
+
+export function PetCard({ pet, showStatus = false, priority = false }: PetCardProps) {
   const { coverImage, hoverImage, detailLabel } = getPetCardMeta(pet);
   const optimizedCoverImage = getOptimizedPetImageUrl(coverImage, 720);
   const optimizedHoverImage = hoverImage ? getOptimizedPetImageUrl(hoverImage, 720) : undefined;
+  const [hoverImageRequested, setHoverImageRequested] = useState(false);
+  const [hoverImageLoaded, setHoverImageLoaded] = useState(false);
+
+  function requestHoverImage() {
+    if (optimizedHoverImage) setHoverImageRequested(true);
+  }
+
+  function handlePointerEnter(event: React.PointerEvent<HTMLElement>) {
+    if (event.pointerType === "mouse") requestHoverImage();
+  }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:rounded-[28px]">
+    <article
+      className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-sm ring-1 ring-black/5 sm:rounded-[28px]"
+      onPointerEnter={handlePointerEnter}
+      onFocusCapture={requestHoverImage}
+    >
       <div className="relative h-52 w-full overflow-hidden bg-stone-100 sm:h-56">
         <div className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4">
           <FavoriteButton listingId={pet.id} />
@@ -20,20 +41,24 @@ export function PetCard({ pet, showStatus = false }: { pet: PetListing; showStat
         <img
           src={optimizedCoverImage}
           alt={pet.name}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
           decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
           className={`absolute inset-0 h-full w-full object-cover transition duration-500 ${
-            optimizedHoverImage ? "opacity-100 group-hover:opacity-0" : ""
+            hoverImageLoaded ? "opacity-100 group-hover:opacity-0 group-focus-within:opacity-0" : ""
           }`}
         />
-        {optimizedHoverImage ? (
+        {optimizedHoverImage && hoverImageRequested ? (
           <img
             src={optimizedHoverImage}
             alt={`${pet.name} alternate view`}
             loading="lazy"
             decoding="async"
             fetchPriority="low"
-            className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
+            onLoad={() => setHoverImageLoaded(true)}
+            className={`absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 ${
+              hoverImageLoaded ? "group-hover:opacity-100 group-focus-within:opacity-100" : ""
+            }`}
           />
         ) : null}
       </div>

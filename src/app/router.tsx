@@ -1,29 +1,8 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { App } from "../App";
 import { ProtectedRoute } from "../components/ProtectedRoute";
-import { AdminDashboardPage } from "../pages/AdminDashboardPage";
-import { AdminPendingListingsPage } from "../pages/AdminPendingListingsPage";
-import { AdminReportsPage } from "../pages/AdminReportsPage";
-import { AdminUsersPage } from "../pages/AdminUsersPage";
-import { AdoptPage } from "../pages/AdoptPage";
-import { AuthPage } from "../pages/AuthPage";
-import { BrowsePetsPage } from "../pages/BrowsePetsPage";
-import { CreateListingPage } from "../pages/CreateListingPage";
-import { DashboardPage } from "../pages/DashboardPage";
-import { EditListingPage } from "../pages/EditListingPage";
-import { FavoritesPage } from "../pages/FavoritesPage";
 import { HomePage } from "../pages/HomePage";
-import { IncomingRequestsPage } from "../pages/IncomingRequestsPage";
-import { LoginPage } from "../pages/LoginPage";
-import { ListingAnalyticsPage } from "../pages/ListingAnalyticsPage";
-import { MyListingsPage } from "../pages/MyListingsPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
-import { OutgoingRequestsPage } from "../pages/OutgoingRequestsPage";
-import { PetDetailsPage } from "../pages/PetDetailsPage";
-import { ProfileSettingsPage } from "../pages/ProfileSettingsPage";
-import { RegisterPage } from "../pages/RegisterPage";
-import { SavedSearchesPage } from "../pages/SavedSearchesPage";
-import { VerifyEmailPage } from "../pages/VerifyEmailPage";
 
 export const router = createBrowserRouter([
   {
@@ -33,35 +12,35 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/home" replace /> },
       { path: "home", element: <HomePage /> },
-      { path: "adopt", element: <AdoptPage /> },
-      { path: "browse", element: <BrowsePetsPage /> },
-      { path: "pets/:id/:petSlug?", element: <PetDetailsPage /> },
-      { path: "auth", element: <AuthPage /> },
+      { path: "adopt", lazy: async () => ({ Component: (await import("../pages/AdoptPage")).AdoptPage }) },
+      { path: "browse", lazy: async () => ({ Component: (await import("../pages/BrowsePetsPage")).BrowsePetsPage }) },
+      { path: "pets/:id/:petSlug?", lazy: async () => ({ Component: (await import("../pages/PetDetailsPage")).PetDetailsPage }) },
+      { path: "auth", lazy: async () => ({ Component: (await import("../pages/AuthPage")).AuthPage }) },
       { path: "login", element: <Navigate to="/auth" replace /> },
       { path: "register", element: <Navigate to="/auth?mode=register" replace /> },
-      { path: "verify-email", element: <VerifyEmailPage /> },
+      { path: "verify-email", lazy: async () => ({ Component: (await import("../pages/VerifyEmailPage")).VerifyEmailPage }) },
       {
         element: <ProtectedRoute />,
         children: [
-          { path: "dashboard", element: <DashboardPage /> },
-          { path: "dashboard/analytics", element: <ListingAnalyticsPage /> },
-          { path: "dashboard/listings", element: <MyListingsPage /> },
-          { path: "dashboard/favorites", element: <FavoritesPage /> },
-          { path: "dashboard/searches", element: <SavedSearchesPage /> },
-          { path: "dashboard/listings/new", element: <CreateListingPage /> },
-          { path: "dashboard/listings/:id/edit", element: <EditListingPage /> },
-          { path: "dashboard/profile", element: <ProfileSettingsPage /> },
-          { path: "dashboard/requests/incoming", element: <IncomingRequestsPage /> },
-          { path: "dashboard/requests/outgoing", element: <OutgoingRequestsPage /> }
+          { path: "dashboard", lazy: async () => ({ Component: (await import("../pages/DashboardPage")).DashboardPage }) },
+          { path: "dashboard/analytics", lazy: async () => ({ Component: (await import("../pages/ListingAnalyticsPage")).ListingAnalyticsPage }) },
+          { path: "dashboard/listings", lazy: async () => ({ Component: (await import("../pages/MyListingsPage")).MyListingsPage }) },
+          { path: "dashboard/favorites", lazy: async () => ({ Component: (await import("../pages/FavoritesPage")).FavoritesPage }) },
+          { path: "dashboard/searches", lazy: async () => ({ Component: (await import("../pages/SavedSearchesPage")).SavedSearchesPage }) },
+          { path: "dashboard/listings/new", lazy: async () => ({ Component: (await import("../pages/CreateListingPage")).CreateListingPage }) },
+          { path: "dashboard/listings/:id/edit", lazy: async () => ({ Component: (await import("../pages/EditListingPage")).EditListingPage }) },
+          { path: "dashboard/profile", lazy: async () => ({ Component: (await import("../pages/ProfileSettingsPage")).ProfileSettingsPage }) },
+          { path: "dashboard/requests/incoming", lazy: async () => ({ Component: (await import("../pages/IncomingRequestsPage")).IncomingRequestsPage }) },
+          { path: "dashboard/requests/outgoing", lazy: async () => ({ Component: (await import("../pages/OutgoingRequestsPage")).OutgoingRequestsPage }) }
         ]
       },
       {
         element: <ProtectedRoute role="ADMIN" />,
         children: [
-          { path: "admin", element: <AdminDashboardPage /> },
-          { path: "admin/pending", element: <AdminPendingListingsPage /> },
-          { path: "admin/reports", element: <AdminReportsPage /> },
-          { path: "admin/users", element: <AdminUsersPage /> }
+          { path: "admin", lazy: async () => ({ Component: (await import("../pages/AdminDashboardPage")).AdminDashboardPage }) },
+          { path: "admin/pending", lazy: async () => ({ Component: (await import("../pages/AdminPendingListingsPage")).AdminPendingListingsPage }) },
+          { path: "admin/reports", lazy: async () => ({ Component: (await import("../pages/AdminReportsPage")).AdminReportsPage }) },
+          { path: "admin/users", lazy: async () => ({ Component: (await import("../pages/AdminUsersPage")).AdminUsersPage }) }
         ]
       }
     ]

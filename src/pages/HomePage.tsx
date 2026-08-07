@@ -169,8 +169,8 @@ export function HomePage() {
           <QueryStateNotice title="Loading featured animals" message="Pulling the newest published adoption listings." />
         ) : featuredPetsQuery.data?.items.length ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {featuredPetsQuery.data.items.map((pet) => (
-              <PetCard key={pet.id} pet={pet} />
+            {featuredPetsQuery.data.items.map((pet, index) => (
+              <PetCard key={pet.id} pet={pet} priority={index < 2} />
             ))}
           </div>
         ) : (

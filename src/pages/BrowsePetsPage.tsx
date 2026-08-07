@@ -299,7 +299,7 @@ export function BrowsePetsPage() {
                 message="Fetching categories and published listings."
               />
             ) : petsQuery.data?.items.length ? (
-              petsQuery.data.items.map((pet) => <PetCard key={pet.id} pet={pet} />)
+              petsQuery.data.items.map((pet, index) => <PetCard key={pet.id} pet={pet} priority={index < 2} />)
             ) : (
               <QueryStateNotice
                 title="No animals to show yet"
