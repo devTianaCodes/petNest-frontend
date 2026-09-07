@@ -26,7 +26,7 @@ export function PetDetailsPage() {
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const petQuery = useQuery({
-    queryKey: ["pet", id],
+    queryKey: ["pet", id, user?.id ?? null],
     queryFn: () => getPet(id),
     enabled: Boolean(id),
     staleTime: PUBLIC_QUERY_STALE_TIME_MS

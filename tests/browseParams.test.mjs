@@ -22,6 +22,16 @@ test("browse params parse defaults when search params are empty", () => {
   });
 });
 
+test("controlled filter inputs retain spaces while typing multi-word searches and cities", () => {
+  for (const key of ["search", "city", "state"]) {
+    let filters = getBrowseFilters(new URLSearchParams());
+    for (const character of "New York") {
+      filters = getBrowseFilters(createBrowseSearchParams({ ...filters, [key]: filters[key] + character }));
+    }
+    assert.equal(filters[key], "New York");
+  }
+});
+
 test("browse params keep current filters and omit page one in URLs", () => {
   const params = createBrowseSearchParams({
     search: "luna",
@@ -46,6 +56,12 @@ test("browse params preserve page when greater than one", () => {
   assert.equal(filters.search, "milo");
   assert.equal(filters.category, "dog");
   assert.equal(filters.page, 3);
+});
+
+test("invalid page URLs fall back to the first page", () => {
+  for (const page of ["0.5", "1.5", "Infinity", "-1", "99999999999999999999"]) {
+    assert.equal(getBrowseFilters(new URLSearchParams({ page })).page, 1);
+  }
 });
 
 test("browse params keep non-default sort and view in URLs", () => {

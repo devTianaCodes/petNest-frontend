@@ -8,9 +8,11 @@ import { ListingForm, type ListingFormValues } from "../features/pets/ListingFor
 import { ImageUploader } from "../features/pets/ImageUploader";
 import { getListingStatusMeta } from "../features/pets/listingStatusMeta";
 import { buildPetDetailsPath } from "../features/pets/petPaths";
+import { useAuth } from "../features/auth/AuthContext";
 
 export function EditListingPage() {
   const { id = "" } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [message, setMessage] = useState<string | null>(null);
@@ -22,7 +24,7 @@ export function EditListingPage() {
   });
 
   const listingQuery = useQuery({
-    queryKey: ["pet", id],
+    queryKey: ["pet", id, user?.id ?? null],
     queryFn: () => getPet(id),
     enabled: Boolean(id)
   });
@@ -94,6 +96,10 @@ export function EditListingPage() {
 
   const statusMeta = getListingStatusMeta(listing);
 
+  if (listing.owner?.id !== user?.id || listing.status === "PUBLISHED" || listing.status === "PENDING_APPROVAL") {
+    return <QueryStateNotice title="Listing cannot be edited" message="Only the owner can edit a listing, and published or pending listings are locked for review." />;
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-4">
@@ -153,6 +159,7 @@ export function EditListingPage() {
                     disabled={deleteImageMutation.isPending}
                     className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-70"
                     onClick={() => {
+                      if (!window.confirm("Remove this image from the listing?")) return;
                       setMessage(null);
                       setError(null);
                       deleteImageMutation.mutate(image.id);

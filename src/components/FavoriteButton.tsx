@@ -5,8 +5,6 @@ import { getFavoriteIds } from "../features/favorites/favoritesState";
 import { getProtectedRedirect } from "../features/auth/authRedirect";
 import { useAuth } from "../features/auth/AuthContext";
 
-const favoriteIdsQueryKey = ["favorites", "ids"] as const;
-
 async function getFavoriteIdList() {
   const response = await getFavorites();
   return Array.from(getFavoriteIds(response.items));
@@ -22,6 +20,7 @@ export function FavoriteButton({
   const location = useLocation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const favoriteIdsQueryKey = ["favorites", "ids", user?.id ?? null] as const;
   const favoriteIdsQuery = useQuery({
     queryKey: favoriteIdsQueryKey,
     queryFn: getFavoriteIdList,

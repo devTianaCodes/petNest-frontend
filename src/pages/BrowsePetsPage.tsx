@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { getCategories } from "../api/categories";
@@ -28,11 +28,8 @@ export function BrowsePetsPage() {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [page]);
 
-  const params = useMemo(() => {
-    const next = createBrowseSearchParams(filters);
-    next.set("limit", String(PAGE_SIZE));
-    return next;
-  }, [filters]);
+  const params = createBrowseSearchParams(filters);
+  params.set("limit", String(PAGE_SIZE));
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
@@ -307,7 +304,7 @@ export function BrowsePetsPage() {
             ) : (
               <QueryStateNotice
                 title="No animals to show yet"
-                message="There are no published listings matching the current filters. If this is a fresh database, run the seed data so demo animals appear here."
+                message="There are no published listings matching the current filters. Try changing or clearing your filters."
               />
             )}
           </section>

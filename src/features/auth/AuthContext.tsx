@@ -1,7 +1,9 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { demoLogin, login, logout, refreshSession, register } from "../../api/auth";
 import { setAccessToken } from "../../api/client";
 import type { AuthUser } from "../../types/auth";
+import { createAuthSession } from "./authSession";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -17,60 +19,40 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [accessToken, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const authMutationVersion = useRef(0);
+  const [session] = useState(() => {
+    let userId: string | undefined;
+    return createAuthSession({
+      login,
+      demoLogin,
+      refreshSession,
+      logout,
+      onChange: (response) => {
+        const nextUserId = response?.user.id;
+        if (userId !== nextUserId) queryClient.clear();
+        userId = nextUserId;
+        setAccessToken(response?.accessToken ?? null);
+        setUser(response?.user ?? null);
+        setToken(response?.accessToken ?? null);
+      }
+    });
+  });
 
   useEffect(() => {
-    const refreshVersion = authMutationVersion.current;
-
-    refresh()
-      .catch(() => {
-        if (authMutationVersion.current !== refreshVersion) {
-          return;
-        }
-
-        setUser(null);
-        setToken(null);
-        setAccessToken(null);
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  async function signIn(payload: { email: string; password: string }) {
-    authMutationVersion.current += 1;
-    const response = await login(payload);
-    setUser(response.user);
-    setToken(response.accessToken);
-    setAccessToken(response.accessToken);
-  }
-
-  async function signInDemo() {
-    authMutationVersion.current += 1;
-    const response = await demoLogin();
-    setUser(response.user);
-    setToken(response.accessToken);
-    setAccessToken(response.accessToken);
-  }
+    let active = true;
+    session.refresh()
+      .catch(() => undefined)
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => { active = false; };
+  }, [session]);
 
   async function signUp(payload: { fullName: string; email: string; password: string }) {
     return register(payload);
-  }
-
-  async function signOut() {
-    authMutationVersion.current += 1;
-    await logout();
-    setUser(null);
-    setToken(null);
-    setAccessToken(null);
-  }
-
-  async function refresh() {
-    const response = await refreshSession();
-    setUser(response.user);
-    setToken(response.accessToken);
-    setAccessToken(response.accessToken);
   }
 
   return (
@@ -79,11 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         accessToken,
         isLoading,
-        signIn,
-        signInDemo,
+        signIn: session.signIn,
+        signInDemo: session.signInDemo,
         signUp,
-        signOut,
-        refresh
+        signOut: session.signOut,
+        refresh: session.refresh
       }}
     >
       {children}

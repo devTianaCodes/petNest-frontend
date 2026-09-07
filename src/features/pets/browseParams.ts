@@ -28,7 +28,7 @@ export function getBrowseFilters(searchParams: URLSearchParams): BrowseFilters {
     state: searchParams.get("state") ?? "",
     sort: sortValue === "oldest" || sortValue === "name-asc" ? sortValue : "newest",
     view: viewValue === "list" ? "list" : "grid",
-    page: Number.isFinite(pageValue) && pageValue > 0 ? Math.floor(pageValue) : 1
+    page: Number.isSafeInteger(pageValue) && pageValue > 0 && pageValue <= Math.floor(Number.MAX_SAFE_INTEGER / 50) ? pageValue : 1
   };
 }
 
@@ -36,7 +36,7 @@ export function createBrowseSearchParams(filters: BrowseFilters) {
   const next = new URLSearchParams();
 
   for (const key of filterKeys) {
-    const value = filters[key].trim();
+    const value = filters[key];
     if (value) {
       next.set(key, value);
     }
